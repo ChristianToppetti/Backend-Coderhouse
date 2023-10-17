@@ -1,0 +1,51 @@
+[
+	{
+		"title": "Producto 1",
+		"description": "Desc prod 1",
+		"code": "0001",
+		"price": 111.1,
+		"status": true,
+		"stock": 11,
+		"thumbnail": "./thumbnail1.webp",
+		"id": 1
+	},
+	{
+		"title": "Producto 2",
+		"description": "Desc prod 2",
+		"code": "0002",
+		"price": 222,
+		"status": true,
+		"stock": 22,
+		"thumbnail": "./thumbnail2.webp",
+		"id": 2
+	},
+	{
+		"title": "Producto 3",
+		"description": "Desc prod 3",
+		"code": "0003",
+		"price": 333,
+		"status": true,
+		"stock": 33,
+		"thumbnail": "./thumbnail3.webp",
+		"id": 3
+	},
+	{
+		"title": "Producto 4",
+		"description": "Desc prod 4 updated2",
+		"code": "0004",
+		"price": 44434,
+		"status": true,
+		"stock": 44,
+		"thumbnail": "./thumbnail4.webp",
+		"id": 4
+	},
+	{
+		"title": "Producto test",
+		"description": "test desafio 10",
+		"code": "asd123",
+		"price": "4444",
+		"status": true,
+		"stock": "44",
+		"id": 5
+	}
+]
