@@ -1,0 +1,21 @@
+<div>
+  <h1>Todos los productos</h1>
+  <div class="products_container">
+    {{#each payload}}
+      <div class="product {{#if this.status}}green{{else}}red{{/if}}">
+        <p><strong>ID: </strong>{{this._id}}</p>
+        <p><strong>Nombre: </strong>{{this.title}}</p>
+        <p><strong>Precio: </strong>{{this.price}}</p>
+        <p><strong>Categoria: </strong>{{this.category}}</p>
+        <p>Stock:{{this.stock}}</p>
+        <p>Descripción:{{this.description}}</p>
+      </div>
+    {{/each}}
+  </div>
+
+  <div class="page_controller">
+    <a id="prev_page" href="{{prevLink}}">Anterior</a>
+    <p>{{page}}/{{totalPages}}</p>
+    <a id="next_page" href="{{nextLink}}">Siguiente</a>
+  </div>
+</div>

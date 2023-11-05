@@ -1,0 +1,21 @@
+{
+  "name": "desafio-clase-15",
+  "version": "1.0.0",
+  "description": "Desafio 15.",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node .",
+    "dev": "nodemon ."
+  },
+  "keywords": [],
+  "author": "Christian Toppetti",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-handlebars": "^7.1.2",
+    "mongoose": "^8.0.0",
+    "mongoose-paginate-v2": "^1.7.4",
+    "socket.io": "^4.7.2"
+  }
+}
