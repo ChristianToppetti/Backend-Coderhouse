@@ -4,6 +4,7 @@ import app from './app.js'
 import ProductManager from './dao/ProductManager.js'
 import ChatManager from './dao/ChatManager.js'
 import { init } from './db/mongodb.js'
+import CartManager from './dao/CartManager.js'
 
 await init()
 
@@ -38,11 +39,11 @@ socketServer.on('connection', async (socket) => {
         socketServer.emit('update-products', await getProducts())
     })
     
-    socket.on('delete-product', async (index) => {
-        await ProductManager.deleteProduct(index)
+    socket.on('delete-product', async (pid) => {
+        await ProductManager.deleteProduct(pid)
         socketServer.emit('update-products', await getProducts())
     })
-
+    
     // Chat
     socket.on('send-chat', async () => {
         socket.emit('update-chat', await ChatManager.getMessages())

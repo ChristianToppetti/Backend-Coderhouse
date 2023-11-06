@@ -34,6 +34,18 @@ h1 {
     gap: .5rem;
 }
 
+.product_buttons_container {
+    display: flex;
+    gap: .5rem;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.button_add_to_cart {
+    width: 30%;
+    margin: 0;
+    padding: .2rem;
+}
 #form_add_product {
     display: flex;
     flex-direction: column;
@@ -85,4 +97,9 @@ h1 {
 
 .red {
     border: 2px solid red;
+}
+
+.expand {
+    width: 100%;
+    text-align: center;
 }
