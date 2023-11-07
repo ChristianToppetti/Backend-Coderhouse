@@ -37,7 +37,7 @@ router.get('/:pid', async (req, res) => {
 router.post('/', async (req, res) => {
   let { title, description, code, price, status, stock, thumbnail, category} = req.query
   
-  let boolStatus = status.toLocaleLowerCase() == 'true'
+  let boolStatus = status? status.toLocaleLowerCase() == 'true' : true
 
   const productData = { 
     title,
@@ -46,12 +46,13 @@ router.post('/', async (req, res) => {
     price: parseFloat(price), 
     status: boolStatus, 
     stock: parseInt(stock), 
-    thumbnail, category 
+    thumbnail: thumbnail? thumbnail: "./thumbnail1.webp", 
+    category 
   }
 
   try {
-    let result = await ProductManager.addProduct(productData)
-    res.status(201).json(result)
+    await ProductManager.addProduct(productData)
+    res.status(201).json("Product created successfully.")
   }
   catch (error) {
     res.status(error.statusCode || 500).send(error.message)
@@ -60,12 +61,12 @@ router.post('/', async (req, res) => {
 
 router.put('/:pid', async (req, res) => {
   const { pid } = req.params
-  if(req.query.status) {
-    req.query.status = req.query.status.toLocaleLowerCase() == 'true'
+  if(req.body.status && typeof req.body.status == 'string') {
+    req.body.status = req.body.status.toLocaleLowerCase() == 'true'
   } 
     
   try {
-    let result = await ProductManager.updateProduct(pid, {...req.query})
+    let result = await ProductManager.updateProduct(pid, {...req.body})
     res.status(201).json(result)
   }
   catch (error) {

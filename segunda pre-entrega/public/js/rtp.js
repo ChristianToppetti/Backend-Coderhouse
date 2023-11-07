@@ -61,5 +61,17 @@
         updateProducts(products)
     })
 
+    socket.on('error-adding', (error) => {
+        console.log(error)
+        Swal.fire({
+            position: "center",
+            icon: 'error',
+            title: `Error adding product`,
+            text: error,
+            showConfirmButton: true,
+            timer: 0
+        });
+    })
+
     socket.emit('send-products')
 })()

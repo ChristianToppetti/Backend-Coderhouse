@@ -13,7 +13,7 @@ const socketServer = new Server(server)
 const PORT = 8080
 
 const getProducts = async () => {
-    return (await ProductManager.getProducts()).payload
+    return (await ProductManager.getProducts(0)).payload
 }
 
 socketServer.on('connection', async (socket) => {
@@ -34,7 +34,13 @@ socketServer.on('connection', async (socket) => {
             thumbnail:testThumbnail,
             category: category
         }
-        await ProductManager.addProduct(newProduct)
+        try {
+            await ProductManager.addProduct(newProduct)
+        }
+        catch (error) {
+            socketServer.emit('error-adding', error.message)
+            return
+        }
     
         socketServer.emit('update-products', await getProducts())
     })

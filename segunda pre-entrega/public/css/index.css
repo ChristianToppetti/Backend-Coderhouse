@@ -103,3 +103,21 @@ h1 {
     width: 100%;
     text-align: center;
 }
+
+.cart_container {
+    background-color: gray;
+    padding: 20px;
+    border-radius: 10px;
+    gap: 1rem;
+    overflow: scroll;
+    max-height: 33rem
+}
+
+.cart_item {
+    background-color: rgb(94, 94, 94);
+    display: flex;
+    border-radius: 10px;
+    padding: 5px;
+    margin: 2rem .2rem;
+    justify-content: space-between;
+}

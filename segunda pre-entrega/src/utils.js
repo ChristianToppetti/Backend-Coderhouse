@@ -18,12 +18,11 @@ export const bsonToObject = (bson) => {
 
 export const getLinkToPage = (req, page) => {
     let currentLink = `${req.protocol}://${req.get('host')}${req.originalUrl}`
-
     if(req.query.page) {
         return currentLink.replace(`page=${req.query.page}`, `page=${page}`)
     }
-
-    if(req.query) {
+    
+    if(Object.keys(req.query).length !== 0) {
         return currentLink + `&page=${page}`
     }
     

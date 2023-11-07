@@ -3,9 +3,10 @@ import { Exception } from '../utils.js'
 import { bsonToObject } from '../utils.js'
 
 class ProductManager {
-	static async productExists(id) {
+	static async productExists(pid) {
+		console.log((await ProductModel.findOne({_id: pid})))
 		try {
-			return await ProductModel.findOne({_id: id})
+			return await ProductModel.findOne({_id: pid})
 		} 
 		catch (error) {
 			return false
@@ -27,6 +28,8 @@ class ProductManager {
 	static async getProducts(limit=10, queryPage=1, querySort=null, queryFilters=null) {
 		isNaN(queryPage) && (queryPage = 1)
 		isNaN(limit) && (limit = 10)
+		limit == 0 && (limit = 9999)
+
 		let query = {}
 		let sort = {price: querySort}
 		querySort == 'desc' || querySort == 'asc' || (sort = {})
@@ -62,7 +65,10 @@ class ProductManager {
 	}
 	static async getProductById(id) {
 		try {
-			return await ProductModel.findOne({_id: id})
+			const product = await ProductModel.findOne({_id: id})
+			return { 
+				...product._doc
+			}
 		}
 		catch (error) {
 			throw new Exception(`Product with id "${id}" not found`, 404)
@@ -70,6 +76,7 @@ class ProductManager {
 	}
 	static async addProduct(productData) {
 		try {
+			productData.category = productData.category.toLowerCase()
 			await ProductModel.create(productData)
 		}
 		catch (error) {

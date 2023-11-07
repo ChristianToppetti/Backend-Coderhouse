@@ -13,20 +13,9 @@ router.post('/', async (req, res) => {
 router.get('/:cid', async (req, res) => {
   const { cid } = req.params
   try {
-    const cart = await CartManager.getCartById(cid)
-    const cartProducts = []
-  
-    for (const e of cart.products) {
-      try {
-        const product = await ProductManager.getProductById(e.id)
-        cartProducts.push({product, quantity: e.quantity})
-      }
-      catch {
-        continue
-      }
-    }
+    const cart = await CartManager.getCartById(cid, true)
 
-    res.status(201).json(cartProducts)
+    res.status(201).json(cart.products)
   }
   catch (error) {
     res.status(error.statusCode || 500).send(error.message)
@@ -44,13 +33,6 @@ router.post('/:cid/products/:pid', async (req, res) => {
   catch (error) {
     res.status(error.statusCode || 500).send(error.message)
   }
-})
-
-router.get('/:pid', async (req, res) => {
-  const { pid } = req.params
-  
-  const product = await ProductManager.getProductById(pid)
-  res.json(product)
 })
 
 router.delete('/:cid/products/:pid', async (req, res) => {
@@ -80,8 +62,8 @@ router.put('/:cid', async (req, res) => {
         e.quantity = 1
       }
 
-      if(!await ProductManager.productExists(e.id)) {
-        throw new Exception(`Product with id "${e.id}" doesn't exist.`, 404)
+      if(!await ProductManager.productExists(e.product)) {
+        throw new Exception(`Product with id "${e.product}" doesn't exist.`, 404)
       }
 
       newProducts.push({...e})

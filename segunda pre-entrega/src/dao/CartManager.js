@@ -11,21 +11,30 @@ class CartManager {
 		console.log(result)
 		return result
     }
-	static async updateCart(id, products) {
+	static async updateCart(cid, products) {
 		try {
-			await CartModel.updateOne({_id: id}, {products})
-			return await CartModel.findOne({_id: id})
+			const result = await CartModel.updateOne({_id: cid}, {products})
+
+			if(result.matchedCount == 0) {
+				throw new Error()
+			}
+
+			return await CartModel.findOne({_id: cid})
 		}
 		catch (error) {
-			throw new Exception(`Cart with id "${id}" not found`)
+			throw new Exception(`Cart with id "${cid}" not found`)
 		}
 	}
-	static async getCartById(id) {
+	static async getCartById(cid, populate=false) {
 		try {
-			return await CartModel.findOne({_id: id})
+			const cart = await CartModel.findOne({_id: cid})
+			if(populate) {
+				return await cart.populate('products.product') 
+			}
+			return cart
 		} 
 		catch (error) {
-			throw new Exception(`Cart with id "${id}" not found`, 404)
+			throw new Exception(`Cart with id "${cid}" not found`, 404)
 		}
 	}
 	static async addProductToCart(cid, pid, quantity=null) {
@@ -34,20 +43,15 @@ class CartManager {
 	
 		if(validProduct)
 		{
-			const productIndex = cart.products.findIndex(e => e.id == pid)
-	
+			const productIndex = cart.products.findIndex(e => e.product.toString() == pid)
+
 			if(productIndex != -1) {
-				if(quantity) {
-					cart.products[productIndex].quantity = quantity
-				}
-				else {	
-					cart.products[productIndex].quantity++
-				}
+				quantity? cart.products[productIndex].quantity = quantity : cart.products[productIndex].quantity++
 			}
 			else {
 				cart.products.push({
-					id: pid,
-					quantity: 1
+					product: pid,
+					quantity: quantity? quantity : 1
 				})
 			}
 
@@ -59,7 +63,11 @@ class CartManager {
 	}
 	static async deleteProductFromCart(cid, pid) {
 		const cart = await CartManager.getCartById(cid)
-		const productIndex = cart.products.findIndex(e => e.id == pid)
+		if(!cart) {
+			throw new Exception(`Cart with id "${cid}" not found`, 404)
+		}
+		
+		const productIndex = cart.products.findIndex(e => e.product.toString() == pid)
 
 		if(productIndex != -1) {			
 			cart.products.splice(productIndex, 1)
@@ -67,9 +75,6 @@ class CartManager {
 		}
 
 		throw new Exception(`Product with id "${pid}" not found in cart with id "${cid}"`, 404)
-	}
-	static async updateCartProduct(cid, pid, quantity) {
-		
 	}
 }
 
