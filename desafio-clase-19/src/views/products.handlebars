@@ -1,5 +1,9 @@
 <div>
-  <h1>Todos los productos</h1>
+  <h1>Bienvenido, {{first_name}} {{last_name}} ({{age}}), {{level}}</h1>
+  <h3 style="text-align: center;">Todos los productos</h3>
+  <div style="text-align: right;">
+    <a href="/logout">Cerrar sesión</a>
+  </div>
   <div class="products_container">
     {{#if payload}}
       {{#each payload}}

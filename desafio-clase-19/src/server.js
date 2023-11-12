@@ -4,7 +4,6 @@ import app from './app.js'
 import ProductManager from './dao/ProductManager.js'
 import ChatManager from './dao/ChatManager.js'
 import { init } from './db/mongodb.js'
-import CartManager from './dao/CartManager.js'
 
 await init()
 

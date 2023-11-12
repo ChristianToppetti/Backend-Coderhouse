@@ -15,8 +15,8 @@ router.get('/', async (req, res) => {
       prevLink: result.hasPrevPage ? getLinkToPage(req, result.prevPage) : null,
       nextLink: result.hasNextPage ? getLinkToPage(req, result.nextPage) : null
     }
-
-    res.render('products', { ...result })
+    const { first_name, last_name, age, admin } = req.session.user
+    res.render('products', {first_name, last_name, age, level: admin?'Admin':'Ususario', ...result })
   }
   catch (error) {
     res.status(error.statusCode || 500).send(error.message)
