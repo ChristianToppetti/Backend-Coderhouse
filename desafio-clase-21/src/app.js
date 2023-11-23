@@ -5,6 +5,8 @@ import { __dirname, auth, authAdmin } from './utils.js'
 import expressSession from 'express-session'
 import MongoStore from 'connect-mongo'
 import { URI } from './db/mongodb.js'
+import passport from 'passport'
+import { init as initPassportConfig } from './config/passport.config.js'
 
 import productsApiRouter from './routers/api/products.router.js'
 import cartsApiRouter from './routers/api/carts.router.js'
@@ -37,6 +39,11 @@ app.use(express.static(path.join(__dirname, '../public')))
 app.engine('handlebars', handlebars.engine())
 app.set('views', path.join(__dirname, './views'))
 app.set('view engine', 'handlebars')
+
+initPassportConfig()
+app.use(passport.initialize())
+app.use(passport.session())
+
 
 app.use('/api/account', accountApiRouter)
 app.use('/api/products', productsApiRouter)

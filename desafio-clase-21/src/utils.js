@@ -1,9 +1,9 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
+import path from 'path'
+import bcrypt from 'bcrypt'
+import { fileURLToPath } from 'url'
 
-const __filename = fileURLToPath(import.meta.url);
-
-export const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+export const __dirname = path.dirname(__filename)
 
 export class Exception extends Error {
     constructor(message, status) {
@@ -43,4 +43,17 @@ export const authAdmin = (req, res, next) => {
     }
 
     return res.status(401).send('Unauthorized')
+}
+
+export const createHash = (password) => bcrypt.hashSync(password, bcrypt.genSaltSync(10))
+
+export const isValidPassword = (password, dbPassword) => bcrypt.compareSync(password, dbPassword)
+
+export const coderAdmin = { 
+    first_name: 'Tutor', 
+    last_name: 'Coder', 
+    email: 'adminCoder@coder.com', 
+    age: 9999, 
+    password: 'adminCode3r123', 
+    admin: true 
 }
