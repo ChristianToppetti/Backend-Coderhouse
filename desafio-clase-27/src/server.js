@@ -4,12 +4,13 @@ import app from './app.js'
 import ProductManager from './dao/ProductManager.js'
 import ChatManager from './dao/ChatManager.js'
 import { init } from './db/mongodb.js'
+import config from './config.js'
 
 await init()
 
 const server = http.createServer(app)
 const socketServer = new Server(server)
-const PORT = 8080
+const PORT = config.port
 
 const getProducts = async () => {
     return (await ProductManager.getProducts(0)).payload
@@ -61,5 +62,5 @@ socketServer.on('connection', async (socket) => {
 })
 
 server.listen(PORT, () => {
-  console.log(`Server running in http://localhost:${PORT}/`)
+  console.log(`Server running in http://localhost:${PORT}/ (${config.env})`)
 })

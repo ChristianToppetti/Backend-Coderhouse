@@ -1,7 +1,7 @@
 import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import { Strategy as GithubStrategy } from 'passport-github2'
-import { createHash, isValidPassword, Exception } from '../utils.js'
+import { createHash, isValidPassword } from '../utils.js'
 import UserModel from '../dao/models/user.model.js'
 import { coderAdmin } from '../utils.js'
 
@@ -22,11 +22,16 @@ export const init = () => {
             let user = await UserModel.findOne({ email: profile._json.id })
 
             if (!user) {
+                cartId = fetch("/api/carts/", { method: "POST"})
+                        .then(res => res.json())
+                        .then(data => data)
+
                 user = await UserModel.create({
                     first_name: profile._json.login,
                     last_name: '',
                     email: profile._json.id,
                     password: '',
+                    cart: cartId,
                     admin: false
                 })
             }
@@ -47,11 +52,16 @@ export const init = () => {
                 throw {code: 11000}
             }
             
+            cartId = fetch("/api/carts/", { method: "POST"})
+                    .then(res => res.json())
+                    .then(data => data)
+
             const newUser = await UserModel.create({
                 first_name, 
                 last_name, 
                 email, age,
                 password: createHash(password), 
+                cart: cartId,
                 admin 
             })
 
