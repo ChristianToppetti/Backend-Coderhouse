@@ -1,6 +1,8 @@
 import path from 'path'
 import bcrypt from 'bcrypt'
 import { fileURLToPath } from 'url'
+import jwt from 'jsonwebtoken'
+import passport from 'passport'
 
 const __filename = fileURLToPath(import.meta.url)
 export const __dirname = path.dirname(__filename)
@@ -29,20 +31,36 @@ export const getLinkToPage = (req, page) => {
     return currentLink + `?page=${page}`
 }
 
-export const auth = (req, res, next) => {
-    if (req.session.user) {
-        return next()
+export const authPolicies = (roles) => (req, res, next) => {
+    const authType = process.env.AUTH_TYPE
+    const role = authType === 'JWT' ? req.user.role : authType === 'SESSION' && req.session.user
+    if (!role || !roles.includes(role)) {
+        return res.status(401).send('Unauthorized')
     }
-
-    return res.redirect('/login')
+    
+    return next()
 }
 
-export const authAdmin = (req, res, next) => {
-    if (req.session.user && req.session.user.admin) {
+export const generateJwtToken = (user) => {
+    console.log("JWT Token generated");
+    return jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '1m' })
+}
+
+export const authJwtToken = (req, res, next) => {
+    if (process.env.AUTH_TYPE !== 'JWT') {
         return next()
     }
-
-    return res.status(401).send('Unauthorized')
+    passport.authenticate('jwt', { session: false }, (err, user) => {
+        if (err) {
+            return next(err)
+        }
+        if (!user) {
+            return res.status(401).send('Unauthorized')
+        }
+        console.log("JWT Auth successful");
+        req.user = user
+        next()
+    })(req, res, next)
 }
 
 export const createHash = (password) => bcrypt.hashSync(password, bcrypt.genSaltSync(10))
@@ -55,5 +73,5 @@ export const coderAdmin = {
     email: 'adminCoder@coder.com', 
     age: 9999, 
     password: 'adminCode3r123', 
-    admin: true 
+    role: "admin" 
 }

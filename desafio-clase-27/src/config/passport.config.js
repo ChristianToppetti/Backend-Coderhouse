@@ -1,13 +1,20 @@
 import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import { Strategy as GithubStrategy } from 'passport-github2'
+import { Strategy as JWTStrategy, ExtractJwt  } from 'passport-jwt'
 import { createHash, isValidPassword } from '../utils.js'
 import UserModel from '../dao/models/user.model.js'
 import { coderAdmin } from '../utils.js'
+import CartManager from '../dao/CartManager.js'
 
 const localOpts = {
   usernameField: 'email',
   passReqToCallback: true,
+}
+
+const JWTOpts = {
+    jwtFromRequest: ExtractJwt.fromExtractors([coookieExtractor]),
+    secretOrKey: process.env.JWT_SECRET,
 }
 
 const githubOpts = {
@@ -16,23 +23,28 @@ const githubOpts = {
   callbackURL: 'http://localhost:8080/api/account/githubcallback',
 }
 
+function coookieExtractor(req) {
+    let token = null
+    if (req && req.signedCookies) {
+        token = req.signedCookies['access_token']
+    }
+    return token
+}
+
 export const init = () => {
     passport.use('github', new GithubStrategy(githubOpts, async (accessToken, refreshToken, profile, done) => {
         try {
             let user = await UserModel.findOne({ email: profile._json.id })
 
             if (!user) {
-                cartId = fetch("/api/carts/", { method: "POST"})
-                        .then(res => res.json())
-                        .then(data => data)
-
+                const cartId = await CartManager.addCart({})
                 user = await UserModel.create({
                     first_name: profile._json.login,
                     last_name: '',
                     email: profile._json.id,
                     password: '',
                     cart: cartId,
-                    admin: false
+                    role: "user"
                 })
             }
 
@@ -45,16 +57,13 @@ export const init = () => {
 
     passport.use('register', new LocalStrategy(localOpts, async (req, email, password, done) => {
         let { first_name, last_name, age, admin } = req.body
-        admin = admin == 'on'
-
+        const role = admin == 'on' ? "admin" : "user"
+        console.log("mongo");
         try {
             if(email == coderAdmin.email) {
                 throw {code: 11000}
             }
-            
-            cartId = fetch("/api/carts/", { method: "POST"})
-                    .then(res => res.json())
-                    .then(data => data)
+            const cartId = await CartManager.addCart({})
 
             const newUser = await UserModel.create({
                 first_name, 
@@ -62,7 +71,7 @@ export const init = () => {
                 email, age,
                 password: createHash(password), 
                 cart: cartId,
-                admin 
+                role 
             })
 
             done(null, newUser)
@@ -95,6 +104,10 @@ export const init = () => {
         }
 
         done(null, user)
+    }))
+
+    passport.use('jwt', new JWTStrategy(JWTOpts, (payload, done) => {
+        return done(null, payload);
     }))
 
     passport.serializeUser((user, done) => {

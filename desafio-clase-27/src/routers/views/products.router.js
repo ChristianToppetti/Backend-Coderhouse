@@ -6,7 +6,8 @@ const router = Router()
 
 router.get('/', async (req, res) => {
   const { limit, page, sort, status, category } = req.query
-  
+  const jwtAuthType = process.env.AUTH_TYPE === 'JWT'
+
   try {
     let result = await ProductManager.getProducts(limit, page, sort, {status, category})
 
@@ -15,8 +16,8 @@ router.get('/', async (req, res) => {
       prevLink: result.hasPrevPage ? getLinkToPage(req, result.prevPage) : null,
       nextLink: result.hasNextPage ? getLinkToPage(req, result.nextPage) : null
     }
-    const { first_name, last_name, age, admin } = req.session.user
-    res.render('products', {first_name, last_name, age, level: admin?'Admin':'Ususario', ...result })
+    const { first_name, last_name, age, admin } = jwtAuthType? req.user : req.session.user
+    res.render('products', {first_name, last_name, age, level: admin?'Admin':'Usuario', ...result })
   }
   catch (error) {
     res.status(error.statusCode || 500).send(error.message)

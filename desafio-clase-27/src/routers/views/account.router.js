@@ -3,6 +3,10 @@ import { Router } from 'express'
 const router = Router()
 
 const logedIn = (req) => {
+    if (process.env.AUTH_TYPE === 'JWT') {
+        return !!req.user
+    }
+    
     return !!req.session.user
 }
 

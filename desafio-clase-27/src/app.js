@@ -1,12 +1,13 @@
 import express from 'express'
 import handlebars from 'express-handlebars'
 import path from 'path'
-import { __dirname, auth, authAdmin } from './utils.js'
+import { __dirname, authPolicies, authJwtToken } from './utils.js'
 import expressSession from 'express-session'
 import MongoStore from 'connect-mongo'
 import { URI } from './db/mongodb.js'
 import passport from 'passport'
 import { init as initPassportConfig } from './config/passport.config.js'
+import cookieParser from 'cookie-parser'
 
 import productsApiRouter from './routers/api/products.router.js'
 import cartsApiRouter from './routers/api/carts.router.js'
@@ -19,18 +20,25 @@ import accountApiRouter from './routers/api/account.router.js'
 
 const app = express()
 
-const SESSION_SECRET = 'SUPER_S3CRETO'
+const AUTH_TYPE = process.env.AUTH_TYPE
+const SESSION_SECRET = process.env.SESSION_SECRET
+const COOKIE_SECRET = process.env.COOKIE_SECRET
 
-app.use(expressSession({
-        secret: SESSION_SECRET,
-        resave: false,
-        saveUninitialized: false,
-        store: MongoStore.create({
-        mongoUrl: URI,
-        mongoOptions: {},
-        ttl: 120,
-    }), 
-}))
+if (AUTH_TYPE === 'JWT') {
+    app.use(cookieParser(COOKIE_SECRET))
+} 
+else {
+    app.use(expressSession({
+            secret: SESSION_SECRET,
+            resave: false,
+            saveUninitialized: false,
+            store: MongoStore.create({
+            mongoUrl: URI,
+            mongoOptions: {},
+            ttl: 120,
+        }), 
+    }))
+}
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -42,17 +50,18 @@ app.set('view engine', 'handlebars')
 
 initPassportConfig()
 app.use(passport.initialize())
-app.use(passport.session())
-
+if (AUTH_TYPE === 'SESSION') {
+    app.use(passport.session())
+} 
 
 app.use('/api/account', accountApiRouter)
 app.use('/api/products', productsApiRouter)
 app.use('/api/carts', cartsApiRouter)
 
 app.use('/', accountRouter)
-app.use('/products', auth, productsRouter)
-app.use('/carts', auth, cartsRouter)
-app.use('/realtimeproducts', authAdmin, rtpRouter)
-app.use('/chat', auth, chatRouter)
+app.use('/products', authJwtToken, authPolicies(['admin', 'user']), productsRouter)
+app.use('/carts', authJwtToken, authPolicies(['admin', 'user']), cartsRouter)
+app.use('/realtimeproducts', authJwtToken, authPolicies(['admin']), rtpRouter)
+app.use('/chat', authJwtToken, authPolicies(['admin', 'user']), chatRouter)
 
 export default app
