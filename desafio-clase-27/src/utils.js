@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt'
 import { fileURLToPath } from 'url'
 import jwt from 'jsonwebtoken'
 import passport from 'passport'
+import config from './config.js'
 
 const __filename = fileURLToPath(import.meta.url)
 export const __dirname = path.dirname(__filename)
@@ -32,7 +33,7 @@ export const getLinkToPage = (req, page) => {
 }
 
 export const authPolicies = (roles) => (req, res, next) => {
-    const authType = process.env.AUTH_TYPE
+    const authType = config.auth.authType
     const role = authType === 'JWT' ? req.user.role : authType === 'SESSION' && req.session.user
     if (!role || !roles.includes(role)) {
         return res.status(401).send('Unauthorized')
@@ -43,13 +44,14 @@ export const authPolicies = (roles) => (req, res, next) => {
 
 export const generateJwtToken = (user) => {
     console.log("JWT Token generated");
-    return jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '1m' })
+    return jwt.sign(user, config.auth.jwtSecret, { expiresIn: '1m' })
 }
 
 export const authJwtToken = (req, res, next) => {
-    if (process.env.AUTH_TYPE !== 'JWT') {
+    if (config.auth.authType !== 'JWT') {
         return next()
     }
+
     passport.authenticate('jwt', { session: false }, (err, user) => {
         if (err) {
             return next(err)
@@ -70,8 +72,8 @@ export const isValidPassword = (password, dbPassword) => bcrypt.compareSync(pass
 export const coderAdmin = { 
     first_name: 'Tutor', 
     last_name: 'Coder', 
-    email: 'adminCoder@coder.com', 
+    email: config.admin.user, 
     age: 9999, 
-    password: 'adminCode3r123', 
-    role: "admin" 
+    password: config.admin.password, 
+    role: "admin"
 }

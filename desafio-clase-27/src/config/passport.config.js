@@ -3,9 +3,8 @@ import { Strategy as LocalStrategy } from 'passport-local'
 import { Strategy as GithubStrategy } from 'passport-github2'
 import { Strategy as JWTStrategy, ExtractJwt  } from 'passport-jwt'
 import { createHash, isValidPassword } from '../utils.js'
-import UserModel from '../dao/models/user.model.js'
 import { coderAdmin } from '../utils.js'
-import CartManager from '../dao/CartManager.js'
+import UserController from '../controllers/user.controller.js'
 
 const localOpts = {
   usernameField: 'email',
@@ -34,16 +33,14 @@ function coookieExtractor(req) {
 export const init = () => {
     passport.use('github', new GithubStrategy(githubOpts, async (accessToken, refreshToken, profile, done) => {
         try {
-            let user = await UserModel.findOne({ email: profile._json.id })
+            let user = await UserController.getUser(profile._json.id)
 
             if (!user) {
-                const cartId = await CartManager.addCart({})
-                user = await UserModel.create({
+                user = await UserController.addUser({
                     first_name: profile._json.login,
                     last_name: '',
                     email: profile._json.id,
                     password: '',
-                    cart: cartId,
                     role: "user"
                 })
             }
@@ -58,25 +55,25 @@ export const init = () => {
     passport.use('register', new LocalStrategy(localOpts, async (req, email, password, done) => {
         let { first_name, last_name, age, admin } = req.body
         const role = admin == 'on' ? "admin" : "user"
-        console.log("mongo");
+
         try {
             if(email == coderAdmin.email) {
                 throw {code: 11000}
             }
-            const cartId = await CartManager.addCart({})
 
-            const newUser = await UserModel.create({
+            const newUser = await UserController.addUser({
                 first_name, 
                 last_name, 
-                email, age,
+                email, 
+                age,
                 password: createHash(password), 
-                cart: cartId,
                 role 
             })
 
             done(null, newUser)
         } 
         catch (error) {
+            console.log("error", error);
             if (error.code == 11000) {
                 return done(null, false, { message: 'Email already taken.' })
             }
@@ -87,18 +84,17 @@ export const init = () => {
 
     passport.use('login', new LocalStrategy(localOpts, async (req, email, password, done) => {
         let user = null
-
+        
         if(email == coderAdmin.email && password == coderAdmin.password) {
             user = coderAdmin
         }
         else {
-            const dbUser = await UserModel.findOne({ email })
-
+            const dbUser = await UserController.getUser(email)
             if ( dbUser && isValidPassword(password, dbUser.password)) {
-                user = dbUser
+                user = await dbUser
             }
         }
-
+        
         if(!user) {
             return done(null, false, { message: 'Invalid email or password.' })
         }
@@ -115,7 +111,7 @@ export const init = () => {
     })
 
     passport.deserializeUser(async (uid, done) => {
-        const user = await UserModel.findById(uid)
+        const user = await UserController.getUserById(uid)
         done(null, user)
     })
 }

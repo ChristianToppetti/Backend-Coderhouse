@@ -1,6 +1,6 @@
 import MessageModel from './models/message.model.js'
 
-class ChatManager {
+class ChatDao {
 	static async getMessages() {
 		return await MessageModel.find()
 	}
@@ -10,4 +10,4 @@ class ChatManager {
     }
 }
 
-export default ChatManager
+export default ChatDao

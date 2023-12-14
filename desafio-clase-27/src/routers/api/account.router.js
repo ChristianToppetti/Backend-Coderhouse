@@ -1,6 +1,8 @@
 import { Router } from 'express'
 import passport from 'passport'
-import { generateJwtToken } from '../../utils.js'
+import { generateJwtToken, authJwtToken } from '../../utils.js'
+import CartService from '../../services/cart.services.js'
+import config from '../../config.js'
 
 const router = Router()
 
@@ -11,16 +13,19 @@ router.post('/login', passport.authenticate('login', { session: false, failureRe
             last_name: req.user.last_name,
             age: req.user.age,
             email: req.user.email,
-            role: req.user.role
+            role: req.user.role,
+            cart: req.user.cart
         }
-        console.log("step1");
+
+        if (payload.email == config.admin.user) {
+            payload.cart = await CartService.getAdminCart()
+        }
+        
         res.cookie("access_token", generateJwtToken(payload), { signed: true, httpOnly: true, maxAge: 1000 * 60 * 2 })
             .status(201)
             .redirect('/products')
     }
     else {
-
-        
         req.session.user = req.user
         res.redirect('/products')
     }
@@ -47,7 +52,8 @@ router.get('/githubcallback', passport.authenticate('github', { failureRedirect:
             last_name: req.user.last_name,
             age: req.user.age,
             email: req.user.email,
-            admin: req.user.admin
+            role: req.user.role,
+            cart: req.user.cart
         }
         res.cookie("access_token", generateJwtToken(payload), { httpOnly: true, signed: true, maxAge: 1000 * 60 * 2 })
             .status(201)
@@ -57,6 +63,15 @@ router.get('/githubcallback', passport.authenticate('github', { failureRedirect:
         req.session.user = req.user
     }
     res.redirect('/products')
+})
+
+router.get('/current', authJwtToken, (req, res) => {
+    if (process.env.AUTH_TYPE === 'JWT') {
+        res.status(201).json(req.user)
+    } 
+    else if (process.env.AUTH_TYPE === 'SESSION') {
+        res.status(201).json(req.session.user)
+    }
 })
 
 export default router

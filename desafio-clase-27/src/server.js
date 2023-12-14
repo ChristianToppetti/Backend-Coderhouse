@@ -1,8 +1,8 @@
 import http from 'http'
 import { Server } from 'socket.io'
 import app from './app.js'
-import ProductManager from './dao/ProductManager.js'
-import ChatManager from './dao/ChatManager.js'
+import ProductController from './controllers/product.controller.js'
+import ChatController from './controllers/chat.controller.js'
 import { init } from './db/mongodb.js'
 import config from './config.js'
 
@@ -13,7 +13,7 @@ const socketServer = new Server(server)
 const PORT = config.port
 
 const getProducts = async () => {
-    return (await ProductManager.getProducts(0)).payload
+    return (await ProductController.getProducts(0)).payload
 }
 
 socketServer.on('connection', async (socket) => {
@@ -35,7 +35,7 @@ socketServer.on('connection', async (socket) => {
             category: category
         }
         try {
-            await ProductManager.addProduct(newProduct)
+            await ProductController.addProduct(newProduct)
         }
         catch (error) {
             socketServer.emit('error-adding', error.message)
@@ -46,17 +46,17 @@ socketServer.on('connection', async (socket) => {
     })
     
     socket.on('delete-product', async (pid) => {
-        await ProductManager.deleteProduct(pid)
+        await ProductController.deleteProduct(pid)
         socketServer.emit('update-products', await getProducts())
     })
     
     // Chat
     socket.on('send-chat', async () => {
-        socket.emit('update-chat', await ChatManager.getMessages())
+        socket.emit('update-chat', await ChatController.getMessages())
     })
 
     socket.on('new-message', async ({user, message}) => {
-        await ChatManager.addMessage({user, message})
+        await ChatController.addMessage({user, message})
         socketServer.emit('update-message', {user, message})
     })
 })

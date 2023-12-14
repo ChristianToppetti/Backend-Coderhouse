@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import CartManager from '../../dao/CartManager.js'
+import CartController from '../../controllers/cart.cotroller.js'
 
 const router = Router()
 
@@ -7,7 +7,7 @@ router.get('/:cid', async (req, res) => {
   const { cid } = req.params
   
   try {
-    const cart = await CartManager.getCartById(cid, true)
+    const cart = await CartController.getCartById(cid, true)
 
     const products = cart.products.map(e => {
       return {...e.product._doc, quantity: e.quantity}

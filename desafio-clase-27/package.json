@@ -5,8 +5,8 @@
   "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "start": "node .",
-    "dev": "nodemon -r dotenv/config ."
+    "start": "node . --mode prod",
+    "dev": "nodemon . --mode dev"
   },
   "keywords": [],
   "author": "Christian Toppetti",

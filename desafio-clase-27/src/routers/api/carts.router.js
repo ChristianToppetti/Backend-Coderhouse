@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import CartManager from '../../dao/CartManager.js'
-import ProductManager from '../../dao/ProductManager.js'
+import CartController from '../../controllers/cart.cotroller.js'
+import ProductController from '../../controllers/product.controller.js'
 import { Exception } from '../../utils.js'
 
 const router = Router()
@@ -13,7 +13,7 @@ router.post('/', async (req, res) => {
 router.get('/:cid', async (req, res) => {
   const { cid } = req.params
   try {
-    const cart = await CartManager.getCartById(cid, true)
+    const cart = await CartController.getCartById(cid, true)
 
     res.status(201).json(cart.products)
   }
@@ -27,7 +27,7 @@ router.post('/:cid/products/:pid', async (req, res) => {
   const { cid, pid } = req.params
 
   try {
-    const result = await CartManager.addProductToCart(cid, pid)
+    const result = await CartController.addProductToCart(cid, pid)
     res.status(201).json(result)
   }
   catch (error) {
@@ -38,7 +38,7 @@ router.post('/:cid/products/:pid', async (req, res) => {
 router.delete('/:cid/products/:pid', async (req, res) => {
   const { cid, pid } = req.params
   try {
-    await CartManager.deleteProductFromCart(cid, pid)
+    await CartController.deleteProductFromCart(cid, pid)
     res.status(201).send(`Product with id "${pid}" in cart with id "${cid}" deleted successfully.`)
   }
   catch (error) {
@@ -62,14 +62,14 @@ router.put('/:cid', async (req, res) => {
         e.quantity = 1
       }
 
-      if(!await ProductManager.productExists(e.product)) {
+      if(!await ProductController.productExists(e.product)) {
         throw new Exception(`Product with id "${e.product}" doesn't exist.`, 404)
       }
 
       newProducts.push({...e})
     }
 
-    let result = await CartManager.updateCart(cid, newProducts)
+    let result = await CartController.updateCart(cid, newProducts)
     res.status(201).json(result)
   }
   catch (error) {
@@ -87,7 +87,7 @@ router.put('/:cid/products/:pid', async (req, res) => {
   }
 
   try {
-    const result = await CartManager.addProductToCart(cid, pid, quantity)
+    const result = await CartController.addProductToCart(cid, pid, quantity)
     res.status(201).json(result)
   }
   catch (error) {
@@ -98,7 +98,7 @@ router.put('/:cid/products/:pid', async (req, res) => {
 router.delete('/:cid', async (req, res) => {
   const { cid } = req.params
   try {
-    let result = await CartManager.updateCart(cid, [])
+    let result = await CartController.updateCart(cid, [])
     res.status(201).send(`Successfully deleted all products in cart with id "${cid}".`)
     // res.status(201).json(result)
   }

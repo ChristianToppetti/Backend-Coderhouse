@@ -1,45 +1,51 @@
-import CartModel from './models/cart.model.js'
-import ProductManager from './ProductManager.js'
+import CartDao from '../dao/cart.dao.js'
+import ProductService from './product.services.js'
 import { Exception } from '../utils.js'
 
-class CartManager {
-	static async getCarts() {
-		return await CartModel.find()
-	}
-	static async addCart(cart) {
-		const result = await CartModel.create(cart)
-		console.log(result)
-		return result
+class CartService {
+    static async addCart(cart) {
+		return await CartDao.add(cart)
     }
-	static async updateCart(cid, products) {
+
+	static async addNewCart() {
+		return await CartDao.add({})
+	}
+
+	static async getCarts() {
+		return await CartDao.get()
+	}
+	
+	static async updateCart(id, products) {
 		try {
-			const result = await CartModel.updateOne({_id: cid}, {products})
+			const result = await CartDao.update(id, products)
 
 			if(result.matchedCount == 0) {
 				throw new Error()
 			}
 
-			return await CartModel.findOne({_id: cid})
+			return await CartDao.getById(id)
 		}
 		catch (error) {
-			throw new Exception(`Cart with id "${cid}" not found`)
+			throw new Exception(`Cart with id "${id}" not found`)
 		}
 	}
-	static async getCartById(cid, populate=false) {
+
+	static async getCartById(id, populate=false) {
 		try {
-			const cart = await CartModel.findOne({_id: cid})
+			const cart = await CartDao.getById(id)
 			if(populate) {
 				return await cart.populate('products.product') 
 			}
 			return cart
 		} 
 		catch (error) {
-			throw new Exception(`Cart with id "${cid}" not found`, 404)
+			throw new Exception(`Cart with id "${id}" not found`, 404)
 		}
 	}
+
 	static async addProductToCart(cid, pid, quantity=null) {
-		const cart = await CartManager.getCartById(cid)
-		const validProduct = await ProductManager.productExists(pid)
+		const cart = await CartService.getCartById(cid)
+		const validProduct = await ProductService.productExists(pid)
 	
 		if(validProduct)
 		{
@@ -55,27 +61,28 @@ class CartManager {
 				})
 			}
 
-			let result = await CartManager.updateCart(cid, cart.products)
+			let result = await CartDao.update(cid, cart.products)
 			return result
 		}
 	
 		throw new Exception(`Product with id "${pid}" doesn't exist"`, 404)
 	}
+
 	static async deleteProductFromCart(cid, pid) {
-		const cart = await CartManager.getCartById(cid)
-		if(!cart) {
-			throw new Exception(`Cart with id "${cid}" not found`, 404)
-		}
-		
+		const cart = await CartService.getCartById(cid)		
 		const productIndex = cart.products.findIndex(e => e.product.toString() == pid)
 
 		if(productIndex != -1) {			
 			cart.products.splice(productIndex, 1)
-			return await CartManager.updateCart(cid, cart.products)
+			return await CartDao.update(cid, cart.products)
 		}
 
 		throw new Exception(`Product with id "${pid}" not found in cart with id "${cid}"`, 404)
 	}
+
+	static async getAdminCart() {
+		return await CartService.getCartById("657afe2e08fb9fd894556a71")    
+	}
 }
 
-export default CartManager
+export default CartService

@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import ProductManager from '../../dao/ProductManager.js'
+import ProductController from '../../controllers/product.controller.js'
 import { getLinkToPage } from '../../utils.js'
 
 const router = Router()
@@ -7,12 +7,12 @@ const router = Router()
 router.get('/', async (req, res) => {
   const { limit, page, sort } = req.query
   try {
-    let result = await ProductManager.getProducts(limit, page, sort)
+    let result = await ProductController.getProducts(limit, page, sort)
 
     result = { 
       ...result,
       prevLink: result.hasPrevPage ? getLinkToPage(req, result.prevPage) : null,
-      nextLink: result.hasNextPage ? getLinkToPage(req, result.nextPage): null
+      nextLink: result.hasNextPage ? getLinkToPage(req, result.nextPage) : null
     }
 
     res.status(result.status).json(result)
@@ -26,7 +26,7 @@ router.get('/:pid', async (req, res) => {
   const { pid } = req.params
   
   try {
-    const product = await ProductManager.getProductById(pid)
+    const product = await ProductController.getProductById(pid)
     res.status(201).json(product)
   }
   catch (error) {
@@ -35,23 +35,8 @@ router.get('/:pid', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-  let { title, description, code, price, status, stock, thumbnail, category} = req.query
-  
-  let boolStatus = status? status.toLocaleLowerCase() == 'true' : true
-
-  const productData = { 
-    title,
-    description, 
-    code, 
-    price: parseFloat(price), 
-    status: boolStatus, 
-    stock: parseInt(stock), 
-    thumbnail: thumbnail? thumbnail: "./thumbnail1.webp", 
-    category 
-  }
-
   try {
-    await ProductManager.addProduct(productData)
+    await ProductController.addProduct(req.query)
     res.status(201).json("Product created successfully.")
   }
   catch (error) {
@@ -61,12 +46,9 @@ router.post('/', async (req, res) => {
 
 router.put('/:pid', async (req, res) => {
   const { pid } = req.params
-  if(req.body.status && typeof req.body.status == 'string') {
-    req.body.status = req.body.status.toLocaleLowerCase() == 'true'
-  } 
-    
+  
   try {
-    let result = await ProductManager.updateProduct(pid, {...req.body})
+    let result = await ProductController.updateProduct(pid, {...req.body})
     res.status(201).json(result)
   }
   catch (error) {
@@ -78,7 +60,7 @@ router.delete('/:pid', async (req, res) => {
   const { pid } = req.params
 
   try {
-    await ProductManager.deleteProduct(pid)
+    await ProductController.deleteProduct(pid)
     res.status(201).send(`Product with id "${pid}" deleted successfully.`)
   }
   catch (error) {
