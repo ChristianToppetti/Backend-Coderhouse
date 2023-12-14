@@ -5,6 +5,7 @@ import { Strategy as JWTStrategy, ExtractJwt  } from 'passport-jwt'
 import { createHash, isValidPassword } from '../utils.js'
 import { coderAdmin } from '../utils.js'
 import UserController from '../controllers/user.controller.js'
+import config from '../config.js'
 
 const localOpts = {
   usernameField: 'email',
@@ -18,7 +19,7 @@ const JWTOpts = {
 
 const githubOpts = {
   clientID: 'Iv1.2beba5ccbb3912cb',
-  clientSecret: '51b521fe591366813f489859c049f6e2dd6d8e13',
+  clientSecret: config.auth.githubSecret,
   callbackURL: 'http://localhost:8080/api/account/githubcallback',
 }
 
@@ -44,11 +45,11 @@ export const init = () => {
                     role: "user"
                 })
             }
-
             done(null, user)
         }
         catch (error) {
-            return done(null, false, { message: `Something went wrong. ${error}` })
+            console.log(error);
+            return done(`Something went wrong. ${error}`, false)
         }
     }))
 
@@ -75,16 +76,15 @@ export const init = () => {
         catch (error) {
             console.log("error", error);
             if (error.code == 11000) {
-                return done(null, false, { message: 'Email already taken.' })
+                return done("Email already taken.", false)
             }
 
-            return done(null, false, { message: `Something went wrong. ${error}` })
+            return done(`Something went wrong. ${error}`, false)
         }
     }))
 
     passport.use('login', new LocalStrategy(localOpts, async (req, email, password, done) => {
         let user = null
-        
         if(email == coderAdmin.email && password == coderAdmin.password) {
             user = coderAdmin
         }
@@ -96,9 +96,9 @@ export const init = () => {
         }
         
         if(!user) {
-            return done(null, false, { message: 'Invalid email or password.' })
+            return done('Invalid email or password.', false)
         }
-
+        
         done(null, user)
     }))
 
@@ -107,11 +107,23 @@ export const init = () => {
     }))
 
     passport.serializeUser((user, done) => {
+        if(user.email === coderAdmin.email) {
+            return done(null, coderAdmin.password)
+        }
         done(null, user._id)
     })
 
     passport.deserializeUser(async (uid, done) => {
-        const user = await UserController.getUserById(uid)
-        done(null, user)
+        try {
+            if(uid == coderAdmin.password) {
+                return done(null, coderAdmin)
+            }
+
+            const user = await UserController.getUserById(uid)
+            done(null, user)
+        }
+        catch (error) {
+            done("User not found when deserializing", null)
+        }
     })
 }

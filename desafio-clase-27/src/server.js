@@ -56,7 +56,7 @@ socketServer.on('connection', async (socket) => {
     })
 
     socket.on('new-message', async ({user, message}) => {
-        await ChatController.addMessage({user, message})
+        await ChatController.addMessage(user, message)
         socketServer.emit('update-message', {user, message})
     })
 })

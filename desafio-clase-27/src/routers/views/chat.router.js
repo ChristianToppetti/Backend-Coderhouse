@@ -9,6 +9,7 @@ router.get('/', async (req, res) => {
     res.render('chat', { messages: chatMessages})
   }
   catch (error) {
+    console.log(error);
     res.status(error.statusCode || 500).send(error)
   }
 })

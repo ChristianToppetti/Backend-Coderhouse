@@ -1,10 +1,10 @@
 import ChatService from "../services/chat.services.js"
 
 class ChatController {
-    async addMessage(user, message) {
+    static async addMessage(user, message) {
         return await ChatService.addMessage(user, message)
     }
-    async getMessages() {
+    static async getMessages() {
 		return await ChatService.getMessages()
 	}
 }

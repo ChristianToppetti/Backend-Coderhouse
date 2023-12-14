@@ -5,9 +5,10 @@ import CartService from '../../services/cart.services.js'
 import config from '../../config.js'
 
 const router = Router()
+const boolSession = config.auth.authType === 'SESSION'
 
-router.post('/login', passport.authenticate('login', { session: false, failureRedirect: './faillogin' }), async (req, res) => {
-    if (process.env.AUTH_TYPE === 'JWT') {
+router.post('/login', passport.authenticate('login', { session: boolSession, failureRedirect: './faillogin'}), async (req, res) => {
+    if (config.auth.authType === 'JWT') {
         const payload = {
             first_name: req.user.first_name,
             last_name: req.user.last_name,
@@ -27,6 +28,11 @@ router.post('/login', passport.authenticate('login', { session: false, failureRe
     }
     else {
         req.session.user = req.user
+
+        if (req.user.email == config.admin.user) {
+            req.session.user.cart = await CartService.getAdminCart()
+        }
+        
         res.redirect('/products')
     }
 })
@@ -45,7 +51,7 @@ router.get('/failregister', (req, res) => {
 
 router.get('/github', passport.authenticate('github', { scope: ['user:email'] }))
 
-router.get('/githubcallback', passport.authenticate('github', { failureRedirect: './faillogin' }), async (req, res) => {
+router.get('/githubcallback', passport.authenticate('github', { session: boolSession, failureRedirect: './faillogin' }), async (req, res) => {
     if (process.env.AUTH_TYPE === 'JWT') {
         const payload = {
             first_name: req.user.first_name,
@@ -66,10 +72,10 @@ router.get('/githubcallback', passport.authenticate('github', { failureRedirect:
 })
 
 router.get('/current', authJwtToken, (req, res) => {
-    if (process.env.AUTH_TYPE === 'JWT') {
+    if (config.auth.authType === 'JWT') {
         res.status(201).json(req.user)
     } 
-    else if (process.env.AUTH_TYPE === 'SESSION') {
+    else if (config.auth.authType === 'SESSION') {
         res.status(201).json(req.session.user)
     }
 })

@@ -6,7 +6,7 @@ class ChatService {
         return await ChatDao.addMessage({user, message})
     }
     static async getMessages() {
-        messages = await ChatDao.getMessages()
+        const messages = await ChatDao.getMessages()
         return bsonToObject(messages)
 	}
 }

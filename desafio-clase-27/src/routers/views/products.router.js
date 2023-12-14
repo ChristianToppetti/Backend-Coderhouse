@@ -1,7 +1,6 @@
 import { Router } from 'express'
 import ProductController from '../../controllers/product.controller.js'
 import { getLinkToPage } from '../../utils.js'
-import config from '../../config.js'
 
 const router = Router()
 

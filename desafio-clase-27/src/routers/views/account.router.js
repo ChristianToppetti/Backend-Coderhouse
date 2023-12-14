@@ -1,9 +1,10 @@
 import { Router } from 'express'
+import config from '../../config.js'
 
 const router = Router()
 
 const logedIn = (req) => {
-    if (process.env.AUTH_TYPE === 'JWT') {
+    if (config.auth.authType === 'JWT') {
         return !!req.user
     }
     

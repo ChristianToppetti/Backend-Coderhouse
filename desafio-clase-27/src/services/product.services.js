@@ -65,9 +65,9 @@ class ProductService {
 
 	static async getProductById(id) {
 		try {
-			const product = await ProductModel.findOne({_id: id})
+			const product = await ProductDao.getById(id)
 			return { 
-				...product._doc
+				...product
 			}
 		}
 		catch (error) {

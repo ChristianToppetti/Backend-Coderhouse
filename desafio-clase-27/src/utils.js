@@ -33,8 +33,9 @@ export const getLinkToPage = (req, page) => {
 }
 
 export const authPolicies = (roles) => (req, res, next) => {
-    const authType = config.auth.authType
-    const role = authType === 'JWT' ? req.user.role : authType === 'SESSION' && req.session.user
+    const jwtEnabled = config.auth.authType === 'JWT'
+    const role = jwtEnabled ? req.user.role : req.session.user && req.session.user.role
+
     if (!role || !roles.includes(role)) {
         return res.status(401).send('Unauthorized')
     }

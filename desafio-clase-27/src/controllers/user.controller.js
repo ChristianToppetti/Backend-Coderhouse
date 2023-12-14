@@ -10,7 +10,7 @@ class UserController {
     }
 
     static async getUserById(id) {
-        return await UserService.findById(id)
+        return await UserService.getById(id)
     }
 
 }

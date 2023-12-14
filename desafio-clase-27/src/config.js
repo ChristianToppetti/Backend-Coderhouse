@@ -25,7 +25,8 @@ export default {
     auth: {
         authType: process.env.AUTH_TYPE,
         jwtSecret: process.env.JWT_SECRET,
-        sessionSecret: process.env.SESSION_SECRET
+        sessionSecret: process.env.SESSION_SECRET,
+        githubSecret: process.env.GITHUB_SECRET
     },
     admin: {
         user: process.env.ADMIN_USER,

@@ -12,6 +12,10 @@ class UserService {
 
     static async getByEmail(email) {
         let user = await UserDao.get({ email: email })
+        if(!user) {
+            return false
+        }
+        
         return user.populate('cart')
 	}
 
