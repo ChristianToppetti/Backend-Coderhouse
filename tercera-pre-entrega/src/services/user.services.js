@@ -1,13 +1,11 @@
 import UserDao from "../dao/user.dao.js"
-import CartService from "./cart.services.js"
+import CartService from "../../services/cart.services.js"
+import { UserDto } from "../dao/dto/user.dto.js"
 
 class UserService {
     static async addUser(user) {
-        const newUser = {
-            ...user,
-            cart: await CartService.addNewCart({})
-        }
-        return await UserDao.create(newUser)
+        const newCart = await CartService.addNewCart({})
+        return await UserDao.create(new UserDto(user, newCart))
     }
 
     static async getByEmail(email) {
@@ -21,6 +19,10 @@ class UserService {
 
     static async getById(id) {
         return await UserDao.get({ _id:id })
+    }
+
+    static async getByCart(cid) {
+        return await UserDao.get({ cart: cid })
     }
 }
 

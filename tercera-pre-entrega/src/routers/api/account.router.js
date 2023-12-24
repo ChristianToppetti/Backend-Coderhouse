@@ -3,6 +3,7 @@ import passport from 'passport'
 import { generateJwtToken, authJwtToken } from '../../utils.js'
 import CartService from '../../services/cart.services.js'
 import config from '../../config.js'
+import { FrontUser } from '../../dao/dto/user.dto.js'
 
 const router = Router()
 const boolSession = config.auth.authType === 'SESSION'
@@ -73,10 +74,10 @@ router.get('/githubcallback', passport.authenticate('github', { session: boolSes
 
 router.get('/current', authJwtToken, (req, res) => {
     if (config.auth.authType === 'JWT') {
-        res.status(201).json(req.user)
+        res.status(201).json(new FrontUser(req.user))
     } 
     else if (config.auth.authType === 'SESSION') {
-        res.status(201).json(req.session.user)
+        res.status(201).json(new FrontUser(req.session.user))
     }
 })
 

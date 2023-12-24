@@ -6,22 +6,7 @@ class ProductDao {
     }
 
     static async get(query, options) {
-		const { 
-            docs, totalPages, 
-            prevPage, nextPage, 
-            page, hasPrevPage, 
-            hasNextPage 
-        } = await ProductModel.paginate(query, {...options})
-
-		return { 
-			payload: docs,
-			totalPages,
-			prevPage,
-			nextPage,
-			page,
-			hasPrevPage,
-			hasNextPage
-		}
+		return await ProductModel.paginate(query, {...options})
 	}
 
     static async getById(id) {

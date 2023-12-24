@@ -1,5 +1,6 @@
 import ProductDao from '../dao/product.dao.js'
-import { Exception, bsonToObject } from '../utils.js'
+import ProductDto from '../dao/dto/product.dto.js'
+import { Exception } from '../utils.js'
 
 class ProductService {
 	static async productExists(id) {
@@ -30,6 +31,14 @@ class ProductService {
 		return await ProductDao.getProductById(id)
 	}
 
+	static async reduceProductStock(id, quantity) {
+		if (await ProductDao.productExists(id)) {
+			await ProductDao.update(id, { "$inc": { stock: -quantity } })
+		} else {
+			throw new Exception(`Product with id "${id}" not found`, 404)
+		}
+	}
+
 	static async getProducts(limit=10, queryPage=1, querySort=null, queryFilters=null) {
 		isNaN(queryPage) && (queryPage = 1)
 		isNaN(limit) && (limit = 10)
@@ -44,6 +53,7 @@ class ProductService {
 			if(status && status == 'true' || status == 'false' ) {
 				query = {status: status}
 			}
+
 			category && (query = { 
 				...query, 
 				category: category.toLowerCase()
@@ -56,19 +66,12 @@ class ProductService {
 			throw new Exception(`Page "${page}" not found`, 404)
 		}
 
-		result.payload = bsonToObject(result.payload)
-		return { 
-			status: '201', 
-			...result
-		}
+		return new ProductDto(result)
 	}
 
 	static async getProductById(id) {
 		try {
-			const product = await ProductDao.getById(id)
-			return { 
-				...product
-			}
+			return await ProductDao.getById(id)
 		}
 		catch (error) {
 			throw new Exception(`Product with id "${id}" not found`, 404)

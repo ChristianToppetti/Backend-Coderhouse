@@ -16,9 +16,17 @@ router.get('/', async (req, res) => {
       prevLink: result.hasPrevPage ? getLinkToPage(req, result.prevPage) : null,
       nextLink: result.hasNextPage ? getLinkToPage(req, result.nextPage) : null
     }
+    
     const { first_name, last_name, age, role } = user
     const cartId = user.cart._id
-    res.render('products', {first_name, last_name, age, level: role == "admin"?'Admin':'Usuario', cartId, ...result })
+    res.render('products', {
+        first_name, 
+        last_name, 
+        age, 
+        level: role == "admin" ? 'Admin' : 'Usuario', 
+        cartId, 
+        ...result 
+      })
   }
   catch (error) {
     res.status(error.statusCode || 500).send(error.message)
@@ -30,16 +38,7 @@ router.get('/:pid', async (req, res) => {
   
   try {
     const result = await ProductController.getProductById(pid)
-    res.render('details', {
-        _id: result._id,
-        title: result.title,
-        description: result.description,
-        code: result.code,
-        price: result.price,
-        status: result.status,
-        stock: result.stock,
-        category: result.category
-    })
+    res.render('details', {...result})
   }
   catch (error) {
     res.status(error.statusCode || 500).send(error.message)

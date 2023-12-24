@@ -13,6 +13,10 @@ class UserController {
         return await UserService.getById(id)
     }
 
+    static async getUserByCart(cid) {
+        return await UserService.getByCart(cid)
+    }
+
 }
 
 export default UserController

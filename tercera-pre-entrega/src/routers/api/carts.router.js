@@ -1,7 +1,10 @@
 import { Router } from 'express'
 import CartController from '../../controllers/cart.cotroller.js'
 import ProductController from '../../controllers/product.controller.js'
+import TicketController from '../../controllers/ticket.cotroller.js'
+import UserController from '../../controllers/user.controller.js'
 import { Exception } from '../../utils.js'
+import { TicketDto } from '../../dao/dto/ticket.dto.js'
 
 const router = Router()
 
@@ -16,6 +19,20 @@ router.get('/:cid', async (req, res) => {
     const cart = await CartController.getCartById(cid, true)
 
     res.status(201).json(cart.products)
+  }
+  catch (error) {
+    res.status(error.statusCode || 500).send(error.message)
+    return
+  }
+})
+
+router.get('/:cid/purchase', async (req, res) => {
+  const { cid } = req.params
+  try {
+    const user = await UserController.getUserByCart(cid)
+    const ticket = await TicketController.addTicket(new TicketDto(user))
+
+    res.status(201).json(ticket)
   }
   catch (error) {
     res.status(error.statusCode || 500).send(error.message)
