@@ -14,11 +14,11 @@ class UserDao {
     }
     
     static async get(criteria = {}) {
-        return await UserModel.findOne(criteria)
-    }
-
-    static async getById(id) {
-        return await UserModel.findOne({_id: id})
+        let result = await UserModel.findOne(criteria)
+        return result?.populate({
+            path: 'cart',
+            populate: { path: 'products.product' }
+        })
     }
 
     static async update(id, user) {

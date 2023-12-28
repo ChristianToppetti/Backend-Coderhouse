@@ -13,7 +13,7 @@ class ProductService {
 	}
 
 	static async deleteProduct(id) {
-		if (await ProductDao.productExists(id)) {
+		if (await ProductService.productExists(id)) {
 			await ProductDao.delete(id)
 		} else {
 			throw new Exception(`Product with id "${id}" not found`, 404)
@@ -32,7 +32,7 @@ class ProductService {
 	}
 
 	static async reduceProductStock(id, quantity) {
-		if (await ProductDao.productExists(id)) {
+		if (await ProductService.productExists(id)) {
 			await ProductDao.update(id, { "$inc": { stock: -quantity } })
 		} else {
 			throw new Exception(`Product with id "${id}" not found`, 404)

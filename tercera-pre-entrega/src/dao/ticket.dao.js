@@ -1,4 +1,4 @@
-import TicketModel from './models/ticket.model'
+import TicketModel from './models/ticket.model.js'
 
 class TicketDao {
     static async add(ticket) {
@@ -6,11 +6,8 @@ class TicketDao {
     }
 
 	static async get(criteria = {}) {
-		return await TicketModel.find(criteria)
-	}
-
-	static async getById(id) {
-		return await TicketModel.findOne({_id: id})
+		const result = await TicketModel.findOne(criteria)
+		return result?.populate(['purchaser', 'products.pid'])
 	}
 
     static async update(id, products) {

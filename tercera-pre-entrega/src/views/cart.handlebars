@@ -21,4 +21,8 @@
       <h3 style="text-align: center; margin: 1rem">No hay productos en el carrito</h3>
     {{/if}}
   </div>
+  <button id="btn_buy" {{#unless products}}disabled{{/unless}}>Comprar carrito 🛒</button>
 </div>
+
+<script src="/js/cart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

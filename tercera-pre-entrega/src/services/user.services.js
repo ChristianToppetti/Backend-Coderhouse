@@ -1,5 +1,5 @@
 import UserDao from "../dao/user.dao.js"
-import CartService from "../../services/cart.services.js"
+import CartService from "./cart.services.js"
 import { UserDto } from "../dao/dto/user.dto.js"
 
 class UserService {
@@ -14,7 +14,7 @@ class UserService {
             return false
         }
         
-        return user.populate('cart')
+        return user
 	}
 
     static async getById(id) {

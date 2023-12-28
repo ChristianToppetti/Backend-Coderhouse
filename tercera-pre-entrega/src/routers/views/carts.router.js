@@ -8,7 +8,6 @@ router.get('/:cid', async (req, res) => {
   
   try {
     const cart = await CartController.getCartById(cid, true)
-
     const products = cart.products.map(e => {
       return {...e.product._doc, quantity: e.quantity}
     })

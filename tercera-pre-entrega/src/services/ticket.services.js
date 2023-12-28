@@ -5,25 +5,35 @@ import UserService from "../services/user.services.js"
 import { Exception } from "../utils.js"
 
 const updateStock = async (products) => {
-    products.forEach(async (product) => await ProductService.reduceProductStock(product._id, product.quantity))
+    products.forEach(async (product) => await ProductService.reduceProductStock(product.pid, product.quantity))
 }
 
 const updateCart = async (uid, products) => {
-    const cartId = await UserService.getById(uid).cart
+    const user = await UserService.getById(uid)
+    const cartId = user.cart._id
     await CartService.updateCart(cartId, products)
 }
 
 class TicketService {
     static async addTicket(ticket) {
         const failedProducts = []
-
-        ticket.products = ticket.products.map(async (product) => {
-            const prod = await ProductService.getProductById(product._id)
-            if (prod.stock >= product.quantity) {
-                return product
+        
+        ticket.products = ticket.products.filter((product) => {
+            if (product.stock >= product.quantity) {
+                return {
+                    pid: product.pid, 
+                    quantity: product.quantity
+                }
             }
-            failedProducts.push(product)
+            failedProducts.push({
+                product: product.pid, 
+                quantity: product.quantity
+            })
         })
+
+        if (ticket.products.length == 0) {
+            throw new Exception("Products out of stock", 400)
+        }
 
         try {
             await TicketDao.add(ticket)

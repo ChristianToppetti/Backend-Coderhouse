@@ -31,10 +31,10 @@ router.get('/:cid/purchase', async (req, res) => {
   try {
     const user = await UserController.getUserByCart(cid)
     const ticket = await TicketController.addTicket(new TicketDto(user))
-
     res.status(201).json(ticket)
   }
   catch (error) {
+    console.log("error", error);
     res.status(error.statusCode || 500).send(error.message)
     return
   }

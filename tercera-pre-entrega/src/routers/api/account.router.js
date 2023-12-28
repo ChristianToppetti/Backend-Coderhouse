@@ -23,7 +23,7 @@ router.post('/login', passport.authenticate('login', { session: boolSession, fai
             payload.cart = await CartService.getAdminCart()
         }
         
-        res.cookie("access_token", generateJwtToken(payload), { signed: true, httpOnly: true, maxAge: 1000 * 60 * 2 })
+        res.cookie("access_token", generateJwtToken(payload), { signed: true, httpOnly: true, maxAge: 1000 * 60 * 10 })
             .status(201)
             .redirect('/products')
     }
@@ -62,7 +62,7 @@ router.get('/githubcallback', passport.authenticate('github', { session: boolSes
             role: req.user.role,
             cart: req.user.cart
         }
-        res.cookie("access_token", generateJwtToken(payload), { httpOnly: true, signed: true, maxAge: 1000 * 60 * 2 })
+        res.cookie("access_token", generateJwtToken(payload), { httpOnly: true, signed: true, maxAge: 1000 * 60 * 10 })
             .status(201)
             .redirect('/products')
         return

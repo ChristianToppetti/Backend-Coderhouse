@@ -62,6 +62,6 @@ app.use('/', accountRouter)
 app.use('/products', authJwtToken, authPolicies(['admin', 'user']), productsRouter)
 app.use('/carts', authJwtToken, authPolicies(['admin', 'user']), cartsRouter)
 app.use('/realtimeproducts', authJwtToken, authPolicies(['admin']), rtpRouter)
-app.use('/chat', authJwtToken, authPolicies(['admin', 'user']), chatRouter)
+app.use('/chat', authJwtToken, authPolicies(['user']), chatRouter)
 
 export default app
