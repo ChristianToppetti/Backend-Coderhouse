@@ -7,7 +7,7 @@
 
     formChat.addEventListener('submit', async (e) => {
         e.preventDefault()
-        const currentUser = await fetch('/api/account/current').json()
+        const currentUser = await (await fetch('/api/account/current')).json()
         const newMessage = { 
             user: currentUser.first_name, 
             message: inputMsg.value, 
