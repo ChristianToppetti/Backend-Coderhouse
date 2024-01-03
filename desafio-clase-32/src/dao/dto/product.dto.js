@@ -1,4 +1,4 @@
-import { bsonToObject } from "../../utils.js"
+import { bsonToObject } from "../../utils/utils.js"
 
 export default class ProductDto {
     constructor(product) {

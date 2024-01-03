@@ -3,7 +3,7 @@ import CartController from '../../controllers/cart.cotroller.js'
 import ProductController from '../../controllers/product.controller.js'
 import TicketController from '../../controllers/ticket.cotroller.js'
 import UserController from '../../controllers/user.controller.js'
-import { Exception } from '../../utils.js'
+import { Exception } from '../../utils/utils.js'
 import { TicketDto } from '../../dao/dto/ticket.dto.js'
 
 const router = Router()

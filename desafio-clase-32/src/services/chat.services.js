@@ -1,5 +1,5 @@
 import ChatDao from "../dao/chat.dao.js"
-import { bsonToObject } from "../utils.js"
+import { bsonToObject } from "../utils/utils.js"
 
 class ChatService {
     static async addMessage(user, message) {

@@ -1,6 +1,6 @@
 import ProductDao from '../dao/product.dao.js'
 import ProductDto from '../dao/dto/product.dto.js'
-import { Exception } from '../utils.js'
+import { Exception } from '../utils/utils.js'
 
 class ProductService {
 	static async productExists(id) {

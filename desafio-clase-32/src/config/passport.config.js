@@ -2,8 +2,10 @@ import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import { Strategy as GithubStrategy } from 'passport-github2'
 import { Strategy as JWTStrategy, ExtractJwt  } from 'passport-jwt'
-import { createHash, isValidPassword } from '../utils.js'
-import { coderAdmin } from '../utils.js'
+import { createHash, isValidPassword } from '../utils/utils.js'
+import { coderAdmin } from '../utils/utils.js'
+import { CustomError, ErrorCause, ErrorEnums } from '../utils/CustomError.js'
+
 import UserController from '../controllers/user.controller.js'
 import config from '../config.js'
 
@@ -48,8 +50,13 @@ export const init = () => {
             done(null, user)
         }
         catch (error) {
-            console.log(error);
-            return done(`Something went wrong. ${error}`, false)
+            const customError = CustomError.createError({
+                name: 'Error authenticating with Github',
+                cause: ErrorCause.githubAuthError(error),
+                message: `Something went wrong.`,
+                code: ErrorEnums.UNKNOWN_ERROR
+            })
+            return done(customError, false)
         }
     }))
 
@@ -60,6 +67,13 @@ export const init = () => {
         try {
             if(email == coderAdmin.email) {
                 throw {code: 11000}
+            } else if(!first_name || !last_name || !age || !email || !password) {
+                throw CustomError.createError({
+                    name: 'Error creating user',
+                    cause: ErrorCause.creatingUser(req.body),
+                    message: `One or more fields are invalid.`,
+                    code: ErrorEnums.INVALID_PARAMS_ERROR
+                })
             }
 
             const newUser = await UserController.addUser({
@@ -74,12 +88,17 @@ export const init = () => {
             done(null, newUser)
         } 
         catch (error) {
-            console.log("error", error);
             if (error.code == 11000) {
-                return done("Email already taken.", false)
-            }
+                const error = CustomError.createError({
+                    name: 'Error creating user',
+                    cause: ErrorCause.emailTaken(email),
+                    message: `One or more fields are invalid.`,
+                    code: ErrorEnums.INVALID_PARAMS_ERROR
+                })
 
-            return done(`Something went wrong. ${error}`, false)
+                return done(error, false)
+            }
+            return done(error, false)
         }
     }))
 
@@ -96,7 +115,13 @@ export const init = () => {
         }
         
         if(!user) {
-            return done('Invalid email or password.', false)
+            const error = CustomError.createError({
+                name: 'Error login user',
+                cause: ErrorCause.invalidCredentials(),
+                message: `One or more fields are invalid.`,
+                code: ErrorEnums.UNAUTHORIZED_ERROR
+            })
+            return done(error, false)
         }
         
         done(null, user)
@@ -123,7 +148,14 @@ export const init = () => {
             done(null, user)
         }
         catch (error) {
-            done("User not found when deserializing", null)
+            const customError = CustomError.createError({
+                name: 'Error deserializing user',
+                cause: ErrorCause.userNotFound(uid),
+                message: `User not found when deserializing.`,
+                code: ErrorEnums.DATA_BASE_ERROR
+            })
+
+            done(customError, null)
         }
     })
 }

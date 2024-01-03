@@ -1,6 +1,6 @@
 import CartDao from '../dao/cart.dao.js'
 import ProductService from './product.services.js'
-import { Exception } from '../utils.js'
+import { Exception } from '../utils/utils.js'
 
 class CartService {
     static async addCart(cart) {

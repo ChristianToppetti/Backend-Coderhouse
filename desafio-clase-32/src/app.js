@@ -1,7 +1,7 @@
 import express from 'express'
 import handlebars from 'express-handlebars'
 import path from 'path'
-import { __dirname, authPolicies, authJwtToken } from './utils.js'
+import { __dirname, authPolicies, authJwtToken } from './utils/utils.js'
 import expressSession from 'express-session'
 import MongoStore from 'connect-mongo'
 import { URI } from './db/mongodb.js'
@@ -11,12 +11,16 @@ import cookieParser from 'cookie-parser'
 
 import productsApiRouter from './routers/api/products.router.js'
 import cartsApiRouter from './routers/api/carts.router.js'
+import accountApiRouter from './routers/api/account.router.js'
+
 import productsRouter from './routers/views/products.router.js'
 import cartsRouter from './routers/views/carts.router.js'
 import rtpRouter from './routers/views/rtp.router.js'
 import chatRouter from './routers/views/chat.router.js'
 import accountRouter from './routers/views/account.router.js'
-import accountApiRouter from './routers/api/account.router.js'
+import mockingProductsRouter from './routers/views/mock.router.js'
+
+import errorHandler from './middlewares/ErrorHandler.js'
 
 const app = express()
 
@@ -63,5 +67,8 @@ app.use('/products', authJwtToken, authPolicies(['admin', 'user']), productsRout
 app.use('/carts', authJwtToken, authPolicies(['admin', 'user']), cartsRouter)
 app.use('/realtimeproducts', authJwtToken, authPolicies(['admin']), rtpRouter)
 app.use('/chat', authJwtToken, authPolicies(['user']), chatRouter)
+app.use('/mockingproducts', authJwtToken, authPolicies(['admin', 'user']), mockingProductsRouter)
+
+app.use(errorHandler)
 
 export default app

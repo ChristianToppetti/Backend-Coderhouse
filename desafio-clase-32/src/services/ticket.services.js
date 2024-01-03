@@ -2,7 +2,7 @@ import TicketDao from "../dao/ticket.dao.js"
 import CartService from "../services/cart.services.js"
 import ProductService from "../services/product.services.js"
 import UserService from "../services/user.services.js"
-import { Exception } from "../utils.js"
+import { Exception } from "../utils/utils.js"
 
 const updateStock = async (products) => {
     products.forEach(async (product) => await ProductService.reduceProductStock(product.pid, product.quantity))

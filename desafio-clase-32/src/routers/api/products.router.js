@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import ProductController from '../../controllers/product.controller.js'
-import { getLinkToPage } from '../../utils.js'
+import { getLinkToPage } from '../../utils/utils.js'
 
 const router = Router()
 
