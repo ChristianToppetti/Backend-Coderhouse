@@ -62,12 +62,14 @@
     })
 
     socket.on('error-adding', (error) => {
-        console.log(error)
+        console.log(error.name)
+        console.log(error.cause)
+
         Swal.fire({
             position: "center",
             icon: 'error',
-            title: `Error adding product`,
-            text: error,
+            title: error.name,
+            text: "Check the console for more info",
             showConfirmButton: true,
             timer: 0
         });

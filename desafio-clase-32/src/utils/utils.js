@@ -4,7 +4,8 @@ import { fileURLToPath } from 'url'
 import jwt from 'jsonwebtoken'
 import passport from 'passport'
 import config from '../config.js'
-
+import { faker } from '@faker-js/faker'
+  
 const __filename = fileURLToPath(import.meta.url)
 export const __dirname = path.join(path.dirname(__filename), '..')
 
@@ -53,14 +54,15 @@ export const authJwtToken = (req, res, next) => {
         return next()
     }
 
-    passport.authenticate('jwt', { session: false }, (err, user) => {
+    passport.authenticate('jwt', { session: false }, (err, user, info) => {
         if (err) {
             return next(err)
         }
         if (!user) {
+            console.log("JWT Auth failed", user, info);
             return res.status(401).send('Unauthorized')
         }
-        console.log("JWT Auth successful");
+        console.log("JWT Auth successful", info);
         req.user = user
         next()
     })(req, res, next)
@@ -77,4 +79,18 @@ export const coderAdmin = {
     age: 9999, 
     password: config.admin.password, 
     role: "admin"
+}
+
+export const generateProduct = () => {
+    return {
+        _id: faker.database.mongodbObjectId(),
+        title: faker.commerce.productName(),
+        code: faker.string.alphanumeric({ length: 10 }),
+        price: faker.commerce.price(),
+        description: faker.lorem.paragraph(),
+        status: true,
+        stock: faker.number.int({ min: 1, max: 15 }),
+        thumbnail: faker.image.url(),
+        category: faker.commerce.department()
+    }
 }

@@ -4,7 +4,7 @@ import { getLinkToPage } from '../../utils/utils.js'
 
 const router = Router()
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   const { limit, page, sort, status, category } = req.query
   const user = process.env.AUTH_TYPE === 'JWT'? req.user : req.session.user
 
@@ -29,11 +29,11 @@ router.get('/', async (req, res) => {
       })
   }
   catch (error) {
-    res.status(error.statusCode || 500).send(error.message)
+    next(error)
   }
 })
 
-router.get('/:pid', async (req, res) => {
+router.get('/:pid', async (req, res, next) => {
   const { pid } = req.params
   
   try {
@@ -41,7 +41,7 @@ router.get('/:pid', async (req, res) => {
     res.render('details', {...result})
   }
   catch (error) {
-    res.status(error.statusCode || 500).send(error.message)
+    next(error)
   }
 })
 

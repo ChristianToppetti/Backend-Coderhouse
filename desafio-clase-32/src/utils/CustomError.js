@@ -32,6 +32,35 @@ export class ErrorCause {
     static githubAuthError(error) {
         return `Error: ${error}`
     }
+    static productNotFound(pid) {
+        return `Product not found with id: ${product}`
+    }
+    static cartNotFound(cid) {
+        return `Cart not found with id: ${cart}`
+    }
+    static productNotInCart(pid, cid) {
+        return `Product with id: ${pid} not found in cart with id: ${cid}`
+    }
+    static invalidPage(page, totalPages) {
+        return `Page ${page} not found. Total pages: ${totalPages}`
+    }
+    static productAlreadyExists(code) {
+        return `Product with code: ${code} already exists`
+    }
+    static creatingProduct({ title, code, price, description, status, stock, thumbnail, category }) {
+        return `
+        All fields are required.
+        List of required fields:
+        - title (String): received "${title}"
+        - code (String): received "${code}"
+        - price (Number): received "${price}"
+        - description (String): received "${description}"
+        - status (Boolean): received "${status}"
+        - stock (Number): received "${stock}"
+        - thumbnail (String): received "${thumbnail}"
+        - category (String): received "${category}"
+        `
+    }
 }
 
 export const ErrorEnums = {
@@ -42,4 +71,5 @@ export const ErrorEnums = {
     INVALID_PARAMS_ERROR: 4,
     BAD_REQUEST_ERROR: 5,
     UNAUTHORIZED_ERROR: 6,
+    CONFLICT_ERROR: 7
 }

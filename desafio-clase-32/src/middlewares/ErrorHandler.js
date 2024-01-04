@@ -18,6 +18,8 @@ export default (error, req, res, next) => {
         case ErrorEnums.ROUTING_ERROR:
             code = 404
             break;
+        case ErrorEnums.CONFLICT_ERROR:
+            code = 409
         default:
             res.json({status: 'error', message: "Unhandled error."})
             return

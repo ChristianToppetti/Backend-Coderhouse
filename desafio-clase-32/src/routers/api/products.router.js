@@ -4,7 +4,7 @@ import { getLinkToPage } from '../../utils/utils.js'
 
 const router = Router()
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   const { limit, page, sort } = req.query
   try {
     let result = await ProductController.getProducts(limit, page, sort)
@@ -18,11 +18,11 @@ router.get('/', async (req, res) => {
     res.status(result.status).json(result)
   }
   catch (error) {
-    res.status(error.statusCode || 500).send(error.message)
+    next(error)
   }
 })
 
-router.get('/:pid', async (req, res) => {
+router.get('/:pid', async (req, res, next) => {
   const { pid } = req.params
   
   try {
@@ -30,21 +30,21 @@ router.get('/:pid', async (req, res) => {
     res.status(201).json(product)
   }
   catch (error) {
-    res.status(error.statusCode || 500).send(error.message)
+    next(error)
   }
 })
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   try {
     await ProductController.addProduct(req.query)
     res.status(201).json("Product created successfully.")
   }
   catch (error) {
-    res.status(error.statusCode || 500).send(error.message)
+    next(error)
   }
 })
 
-router.put('/:pid', async (req, res) => {
+router.put('/:pid', async (req, res, next) => {
   const { pid } = req.params
   
   try {
@@ -52,11 +52,11 @@ router.put('/:pid', async (req, res) => {
     res.status(201).json(result)
   }
   catch (error) {
-    res.status(error.statusCode || 500).send(error.message)
+    next(error)
   }
 })
 
-router.delete('/:pid', async (req, res) => {
+router.delete('/:pid', async (req, res, next) => {
   const { pid } = req.params
 
   try {
@@ -64,7 +64,7 @@ router.delete('/:pid', async (req, res) => {
     res.status(201).send(`Product with id "${pid}" deleted successfully.`)
   }
   catch (error) {
-    res.status(error.statusCode || 500).send(error.message)
+    next(error)
   }
 })
 

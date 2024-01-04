@@ -1,6 +1,6 @@
 import CartDao from '../dao/cart.dao.js'
 import ProductService from './product.services.js'
-import { Exception } from '../utils/utils.js'
+import { CustomError, ErrorCause, ErrorEnums } from '../utils/CustomError.js'
 
 class CartService {
     static async addCart(cart) {
@@ -26,7 +26,12 @@ class CartService {
 			return await CartDao.getById(id)
 		}
 		catch (error) {
-			throw new Exception(`Cart with id "${id}" not found`)
+			throw CustomError.createError({
+				name: 'Error updating cart',
+				cause: ErrorCause.cartNotFound(id),
+				message: `Cart doesn't exist`,
+				code: ErrorEnums.DATA_BASE_ERROR
+			})
 		}
 	}
 
@@ -39,7 +44,12 @@ class CartService {
 			return cart
 		} 
 		catch (error) {
-			throw new Exception(`Cart with id "${id}" not found`, 404)
+			throw CustomError.createError({
+				name: 'Error getting cart',
+				cause: ErrorCause.cartNotFound(id),
+				message: `Cart doesn't exist`,
+				code: ErrorEnums.DATA_BASE_ERROR
+			})
 		}
 	}
 
@@ -64,8 +74,13 @@ class CartService {
 			let result = await CartDao.update(cid, cart.products)
 			return result
 		}
-	
-		throw new Exception(`Product with id "${pid}" doesn't exist"`, 404)
+		
+		throw CustomError.createError({
+			name: 'Error adding product to cart',
+			cause: ErrorCause.productNotFound(pid),
+			message: `Product doesn't exist`,
+			code: ErrorEnums.DATA_BASE_ERROR
+		})
 	}
 
 	static async deleteProductFromCart(cid, pid) {
@@ -77,11 +92,16 @@ class CartService {
 			return await CartDao.update(cid, cart.products)
 		}
 
-		throw new Exception(`Product with id "${pid}" not found in cart with id "${cid}"`, 404)
+		throw CustomError.createError({
+			name: 'Error deleting product from cart',
+			cause: ErrorCause.productNotInCart(pid, cid),
+			message: `Product doesn't exist`,
+			code: ErrorEnums.DATA_BASE_ERROR
+		})
 	}
 
 	static async getAdminCart() {
-		return await CartService.getCartById("657afe2e08fb9fd894556a71")    
+		return await CartService.getCartById("65972f357665cae4733e8e56")    
 	}
 }
 

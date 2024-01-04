@@ -2,8 +2,7 @@ import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import { Strategy as GithubStrategy } from 'passport-github2'
 import { Strategy as JWTStrategy, ExtractJwt  } from 'passport-jwt'
-import { createHash, isValidPassword } from '../utils/utils.js'
-import { coderAdmin } from '../utils/utils.js'
+import { createHash, isValidPassword, coderAdmin} from '../utils/utils.js'
 import { CustomError, ErrorCause, ErrorEnums } from '../utils/CustomError.js'
 
 import UserController from '../controllers/user.controller.js'
@@ -128,6 +127,7 @@ export const init = () => {
     }))
 
     passport.use('jwt', new JWTStrategy(JWTOpts, (payload, done) => {
+        console.log("config jwt");
         return done(null, payload);
     }))
 
@@ -143,7 +143,7 @@ export const init = () => {
             if(uid == coderAdmin.password) {
                 return done(null, coderAdmin)
             }
-
+            console.log("deserializing user", uid);
             const user = await UserController.getUserById(uid)
             done(null, user)
         }

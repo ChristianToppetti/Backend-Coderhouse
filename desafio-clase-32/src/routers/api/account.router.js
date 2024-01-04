@@ -62,7 +62,7 @@ router.get('/githubcallback', passport.authenticate('github', { session: boolSes
             role: req.user.role,
             cart: req.user.cart
         }
-        res.cookie("access_token", generateJwtToken(payload), { httpOnly: true, signed: true, maxAge: 1000 * 60 * 10 })
+        res.cookie("access_token", generateJwtToken(payload), { httpOnly: true, signed: true, maxAge: 600000 })
             .status(201)
             .redirect('/products')
         return

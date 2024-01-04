@@ -4,13 +4,26 @@
         fetch(`/api/carts/${cartId}/products/${productId}`, { method: "POST" })
                 .then(res => res.json())
                 .then(data => {
-                    console.log("Db response: ", data)
-                    Swal.fire({
-                        position: "center",
-                        title: `Product successfully added to cart with id: ${cartId}`,
-                        showConfirmButton: true,
-                        timer: 0
-                      });
+                    console.log("Db response: ", data.status)
+                    if (data.status && data.status == "error") {
+                        Swal.fire({
+                            position: "center",
+                            icon: 'error',
+                            title: data.message,
+                            text: data.cause,
+                            showConfirmButton: true,
+                            timer: 0
+                          })
+                        
+                    }
+                    else {
+                        Swal.fire({
+                            position: "center",
+                            title: `Product successfully added to cart with id: ${cartId}`,
+                            showConfirmButton: true,
+                            timer: 0
+                          })
+                    }
                 })
     }
 

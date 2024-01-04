@@ -38,7 +38,8 @@ socketServer.on('connection', async (socket) => {
             await ProductController.addProduct(newProduct)
         }
         catch (error) {
-            socketServer.emit('error-adding', error.message)
+            console.log(error)
+            socketServer.emit('error-adding', error)
             return
         }
     

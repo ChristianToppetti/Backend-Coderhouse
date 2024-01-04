@@ -3,7 +3,7 @@ import CartController from '../../controllers/cart.cotroller.js'
 
 const router = Router()
 
-router.get('/:cid', async (req, res) => {
+router.get('/:cid', async (req, res, next) => {
   const { cid } = req.params
   
   try {
@@ -15,7 +15,7 @@ router.get('/:cid', async (req, res) => {
     res.render('cart', { cartId: cid, products })
   }
   catch (error) {
-    res.status(error.statusCode || 500).send(error.message)
+    next(error)
   }
 })
 

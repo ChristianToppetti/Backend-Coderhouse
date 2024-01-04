@@ -8,12 +8,12 @@ import { TicketDto } from '../../dao/dto/ticket.dto.js'
 
 const router = Router()
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   let result = await CartManager.addCart({})
   res.status(201).json(result)
 })
 
-router.get('/:cid', async (req, res) => {
+router.get('/:cid', async (req, res, next) => {
   const { cid } = req.params
   try {
     const cart = await CartController.getCartById(cid, true)
@@ -21,12 +21,11 @@ router.get('/:cid', async (req, res) => {
     res.status(201).json(cart.products)
   }
   catch (error) {
-    res.status(error.statusCode || 500).send(error.message)
-    return
+    next(error)
   }
 })
 
-router.get('/:cid/purchase', async (req, res) => {
+router.get('/:cid/purchase', async (req, res, next) => {
   const { cid } = req.params
   try {
     const user = await UserController.getUserByCart(cid)
@@ -34,13 +33,11 @@ router.get('/:cid/purchase', async (req, res) => {
     res.status(201).json(ticket)
   }
   catch (error) {
-    console.log("error", error);
-    res.status(error.statusCode || 500).send(error.message)
-    return
+    next(error)
   }
 })
 
-router.post('/:cid/products/:pid', async (req, res) => {
+router.post('/:cid/products/:pid', async (req, res, next) => {
   const { cid, pid } = req.params
 
   try {
@@ -48,22 +45,22 @@ router.post('/:cid/products/:pid', async (req, res) => {
     res.status(201).json(result)
   }
   catch (error) {
-    res.status(error.statusCode || 500).send(error.message)
+    next(error)
   }
 })
 
-router.delete('/:cid/products/:pid', async (req, res) => {
+router.delete('/:cid/products/:pid', async (req, res, next) => {
   const { cid, pid } = req.params
   try {
     await CartController.deleteProductFromCart(cid, pid)
     res.status(201).send(`Product with id "${pid}" in cart with id "${cid}" deleted successfully.`)
   }
   catch (error) {
-    res.status(error.statusCode || 500).send(error.message)
+    next(error)
   }
 })
 
-router.put('/:cid', async (req, res) => {
+router.put('/:cid', async (req, res, next) => {
   const { cid } = req.params
 
   if(!Array.isArray(req.body)) {
@@ -90,11 +87,11 @@ router.put('/:cid', async (req, res) => {
     res.status(201).json(result)
   }
   catch (error) {
-    res.status(error.statusCode || 500).send(error.message)
+    next(error)
   }
 })
 
-router.put('/:cid/products/:pid', async (req, res) => {
+router.put('/:cid/products/:pid', async (req, res, next) => {
   const { cid, pid } = req.params
   const { quantity } = req.body
 
@@ -108,11 +105,11 @@ router.put('/:cid/products/:pid', async (req, res) => {
     res.status(201).json(result)
   }
   catch (error) {
-    res.status(error.statusCode || 500).send(error.message)
+    next(error)
   }
 })
 
-router.delete('/:cid', async (req, res) => {
+router.delete('/:cid', async (req, res, next) => {
   const { cid } = req.params
   try {
     let result = await CartController.updateCart(cid, [])
@@ -120,7 +117,7 @@ router.delete('/:cid', async (req, res) => {
     // res.status(201).json(result)
   }
   catch (error) {
-    res.status(error.statusCode || 500).send(error.message)
+    next(error)
   }
 })
 
