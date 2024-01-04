@@ -5,7 +5,7 @@ const router = Router()
 
 router.get('/', async (req, res) => {
     const users = []
-    for (let index = 0; index < 50; index++) {
+    for (let index = 0; index < 100; index++) {
         users.push(generateProduct())
     }
 
