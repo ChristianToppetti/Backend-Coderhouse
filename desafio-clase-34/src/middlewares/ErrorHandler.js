@@ -1,7 +1,7 @@
 import { ErrorEnums } from "../utils/CustomError.js"
 
 export default (error, req, res, next) => {
-    console.error(error)
+    req.logger.error(error)
     let code
     switch (error.code) {
         case ErrorEnums.UNKNOWN_ERROR:

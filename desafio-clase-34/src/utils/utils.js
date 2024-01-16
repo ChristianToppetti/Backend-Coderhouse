@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt'
 import { fileURLToPath } from 'url'
 import jwt from 'jsonwebtoken'
 import passport from 'passport'
-import config from '../config.js'
+import config from '../config/config.js'
 import { faker } from '@faker-js/faker'
   
 const __filename = fileURLToPath(import.meta.url)
@@ -45,7 +45,6 @@ export const authPolicies = (roles) => (req, res, next) => {
 }
 
 export const generateJwtToken = (user) => {
-    console.log("JWT Token generated");
     return jwt.sign(user, config.auth.jwtSecret, { expiresIn: '1m' })
 }
 
@@ -59,10 +58,10 @@ export const authJwtToken = (req, res, next) => {
             return next(err)
         }
         if (!user) {
-            console.log("JWT Auth failed", user, info);
+            req.logger.info("JWT Auth failed:", info)
             return res.status(401).send('Unauthorized')
         }
-        console.log("JWT Auth successful", info);
+        req.logger.info(`JWT Auth successful`)
         req.user = user
         next()
     })(req, res, next)

@@ -6,7 +6,7 @@ import { createHash, isValidPassword, coderAdmin} from '../utils/utils.js'
 import { CustomError, ErrorCause, ErrorEnums } from '../utils/CustomError.js'
 
 import UserController from '../controllers/user.controller.js'
-import config from '../config.js'
+import config from './config.js'
 
 const localOpts = {
   usernameField: 'email',
@@ -127,7 +127,6 @@ export const init = () => {
     }))
 
     passport.use('jwt', new JWTStrategy(JWTOpts, (payload, done) => {
-        console.log("config jwt");
         return done(null, payload);
     }))
 
@@ -143,7 +142,7 @@ export const init = () => {
             if(uid == coderAdmin.password) {
                 return done(null, coderAdmin)
             }
-            console.log("deserializing user", uid);
+            req.logger.info("Deserializing user:" + uid);
             const user = await UserController.getUserById(uid)
             done(null, user)
         }

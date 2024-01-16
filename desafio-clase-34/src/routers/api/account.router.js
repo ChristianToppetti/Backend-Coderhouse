@@ -2,7 +2,7 @@ import { Router } from 'express'
 import passport from 'passport'
 import { generateJwtToken, authJwtToken } from '../../utils/utils.js'
 import CartService from '../../services/cart.services.js'
-import config from '../../config.js'
+import config from '../../config/config.js'
 import { FrontUser } from '../../dao/dto/user.dto.js'
 
 const router = Router()

@@ -4,7 +4,8 @@ import app from './app.js'
 import ProductController from './controllers/product.controller.js'
 import ChatController from './controllers/chat.controller.js'
 import { init } from './db/mongodb.js'
-import config from './config.js'
+import config from './config/config.js'
+import { getLogger } from './config/logger.js'
 
 await init()
 
@@ -63,5 +64,5 @@ socketServer.on('connection', async (socket) => {
 })
 
 server.listen(PORT, () => {
-  console.log(`Server running in http://localhost:${PORT}/ (${config.env})`)
+    getLogger().info(`Server running in http://localhost:${PORT}/ (${config.env})`)
 })

@@ -17,8 +17,8 @@ dotenv.config({ path: envFile })
 console.log(envFile, process.env.ENV)
 
 export default {
-    port: process.env.PORT,
-    env: process.env.ENV,
+    port: process.env.PORT || 8080,
+    env: process.env.ENV || 'developement',
     db: {
         mongoDbUri: process.env.MONGODB_URI
     },

@@ -12,6 +12,7 @@ import cookieParser from 'cookie-parser'
 import productsApiRouter from './routers/api/products.router.js'
 import cartsApiRouter from './routers/api/carts.router.js'
 import accountApiRouter from './routers/api/account.router.js'
+import loggerTestRouter from './routers/api/logtest.router.js'
 
 import productsRouter from './routers/views/products.router.js'
 import cartsRouter from './routers/views/carts.router.js'
@@ -21,6 +22,7 @@ import accountRouter from './routers/views/account.router.js'
 import mockingProductsRouter from './routers/views/mock.router.js'
 
 import errorHandler from './middlewares/ErrorHandler.js'
+import { addLogger } from './config/logger.js'
 
 const app = express()
 
@@ -33,10 +35,10 @@ if (AUTH_TYPE === 'JWT') {
 } 
 else {
     app.use(expressSession({
-            secret: SESSION_SECRET,
-            resave: false,
-            saveUninitialized: false,
-            store: MongoStore.create({
+        secret: SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        store: MongoStore.create({
             mongoUrl: URI,
             mongoOptions: {},
             ttl: 120,
@@ -44,6 +46,7 @@ else {
     }))
 }
 
+app.use(addLogger)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, '../public')))
@@ -61,6 +64,7 @@ if (AUTH_TYPE === 'SESSION') {
 app.use('/api/account', accountApiRouter)
 app.use('/api/products', productsApiRouter)
 app.use('/api/carts', cartsApiRouter)
+app.use('/loggerTest', loggerTestRouter)
 
 app.use('/', accountRouter)
 app.use('/products', authJwtToken, authPolicies(['admin', 'user']), productsRouter)

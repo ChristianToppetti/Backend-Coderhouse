@@ -1,13 +1,16 @@
 import mongoose from 'mongoose'
-import config from '../config.js'
+import config from '../config/config.js'
+import { getLogger } from '../config/logger.js'
 
 export const URI = config.db.mongoDbUri
 
 export const init = async () => {
+  let logger = getLogger()
   try {
     await mongoose.connect(URI)
-    console.log('DB connected')
+    logger.info('DB connected')
+
   } catch (error) {
-    console.log('DB conection error:', error.message)
+    logger.error('DB conection error:', error.message)
   }
 }
