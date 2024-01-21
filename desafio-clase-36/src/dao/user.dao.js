@@ -21,8 +21,8 @@ class UserDao {
         })
     }
 
-    static async update(id, user) {
-        return await UserModel.updateOne({_id: id}, user)
+    static async update(id, options) {
+        return await UserModel.updateOne({_id: id}, { ...options })
     }
 
     static async delete(id) {

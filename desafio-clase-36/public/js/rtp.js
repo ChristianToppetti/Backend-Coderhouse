@@ -12,9 +12,10 @@
 
     const socket = io()
 
-    formAdd.addEventListener('submit', (e) => {
+    formAdd.addEventListener('submit', async (e) => {
         e.preventDefault()
-        const newProduct = { 
+        const user = await (await fetch('/api/account/current')).json()
+        const product = { 
             name: inputName.value, 
             price: inputPrice.value, 
             stock: inputStock.value, 
@@ -23,7 +24,7 @@
             category: inputCat.value
         }
 
-        socket.emit('new-product', newProduct)
+        socket.emit('new-product', {product, user})
         // inputName.value = ''
         // inputPrice.value = ''
         // inputStock.value = ''
@@ -31,9 +32,10 @@
         inputCode.value = ''
     })
 
-    formDelete.addEventListener('submit', (e) => {
+    formDelete.addEventListener('submit', async (e) => {
         e.preventDefault()
-        socket.emit('delete-product', inputDelete.value)
+        const user = await (await fetch('/api/account/current')).json()
+        socket.emit('delete-product', {pid: inputDelete.value, user})
         inputDelete.value = ''
         inputDelete.focus()
     })
@@ -52,7 +54,8 @@
                 <p><strong>Precio: </strong>${e.price.$numberDecimal}</p> 
                 <p><strong>Categoria: </strong>${e.category}</p>
                 <p>Stock:${e.stock}</p>
-                <p>Descripción:${e.description}</p>`
+                <p>Descripción:${e.description}</p>
+                <p>Owner:${e.owner}</p>`
             productsCont.appendChild(product)
         })
     }
@@ -61,7 +64,7 @@
         updateProducts(products)
     })
 
-    socket.on('error-adding', (error) => {
+    socket.on('error', (error) => {
         console.log(error.name)
         console.log(error.cause)
 

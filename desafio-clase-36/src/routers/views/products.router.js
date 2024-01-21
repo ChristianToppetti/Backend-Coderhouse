@@ -23,7 +23,7 @@ router.get('/', async (req, res, next) => {
         first_name, 
         last_name, 
         age, 
-        level: role == "admin" ? 'Admin' : 'Usuario', 
+        level: role == "admin" ? 'Admin' : role == "premium" ? 'Premium' : 'Usuario', 
         cartId, 
         ...result 
       })

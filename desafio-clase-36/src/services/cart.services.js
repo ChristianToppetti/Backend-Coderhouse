@@ -1,5 +1,6 @@
 import CartDao from '../dao/cart.dao.js'
 import ProductService from './product.services.js'
+import UserService from './user.services.js'
 import { CustomError, ErrorCause, ErrorEnums } from '../utils/CustomError.js'
 
 class CartService {
@@ -59,6 +60,17 @@ class CartService {
 	
 		if(validProduct)
 		{
+			const user = await UserService.getByCart(cid)
+			const product = await ProductService.getProductById(pid)
+
+			if (user.email == product.owner) {
+				throw CustomError.createError({
+					name: 'Error adding product to cart',
+					cause: ErrorCause.forbidden(),
+					message: `You can't add a product from your own store`,
+					code: ErrorEnums.FORBIDDEN_ERROR
+				})
+			}
 			const productIndex = cart.products.findIndex(e => e.product.toString() == pid)
 
 			if(productIndex != -1) {
@@ -101,7 +113,15 @@ class CartService {
 	}
 
 	static async getAdminCart() {
-		return await CartService.getCartById("65972f357665cae4733e8e56")    
+		let adminCart = await CartDao.get({ _admincart: true })
+		
+		if (!adminCart) {
+			const newCart = await CartService.addNewCart()
+			await CartDao.updateFields(newCart._id, { _admincart: true })
+			adminCart = await CartDao.get({ _admincart: true })
+		}
+
+		return adminCart
 	}
 }
 

@@ -6,6 +6,7 @@ import ChatController from './controllers/chat.controller.js'
 import { init } from './db/mongodb.js'
 import config from './config/config.js'
 import { getLogger } from './config/logger.js'
+import { CustomError, ErrorCause, ErrorEnums } from './utils/CustomError.js'
 
 await init()
 
@@ -23,8 +24,10 @@ socketServer.on('connection', async (socket) => {
         socketServer.emit('update-products', await getProducts())
     })
 
-    socket.on('new-product', async ({name, price, stock, description, code, category}) => {
+    socket.on('new-product', async ({ product, user }) => {
+        const { name, price, stock, description, code, category} = product
         const testThumbnail = './thumbnail1.webp'
+
         const newProduct = {
             title:name, 
             description, 
@@ -33,23 +36,42 @@ socketServer.on('connection', async (socket) => {
             status:true, 
             stock, 
             thumbnail:testThumbnail,
-            category: category
+            category: category,
+            owner: user.role == 'admin' ? "admin" : user.email
         }
+
         try {
             await ProductController.addProduct(newProduct)
         }
         catch (error) {
-            console.log(error)
-            socketServer.emit('error-adding', error)
+            getLogger().error(error)
+            socketServer.emit('error', error)
             return
         }
     
         socketServer.emit('update-products', await getProducts())
     })
     
-    socket.on('delete-product', async (pid) => {
-        await ProductController.deleteProduct(pid)
-        socketServer.emit('update-products', await getProducts())
+    socket.on('delete-product', async ({pid, user}) => {
+        try {
+            if(user.role != 'admin') {
+                const product = await ProductController.getProductById(pid)
+                if(product.owner != user.email) {
+                    throw CustomError.createError({
+                        name: 'Error deleting product',
+                        cause: ErrorCause.insufficientPermissions(),
+                        message: `You are not the owner of this product`,
+                        code: ErrorEnums.UNAUTHORIZED_ERROR
+                    })
+                }
+            }
+            await ProductController.deleteProduct(pid)
+            socketServer.emit('update-products', await getProducts())
+        }
+        catch (error) {
+            getLogger().error(error)
+            socketServer.emit('error', error)
+        }
     })
     
     // Chat

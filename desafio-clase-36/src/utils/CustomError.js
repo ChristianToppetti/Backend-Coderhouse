@@ -36,7 +36,7 @@ export class ErrorCause {
         return `Product not found with id: ${product}`
     }
     static cartNotFound(cid) {
-        return `Cart not found with id: ${cart}`
+        return `Cart not found with id: ${cid}`
     }
     static productNotInCart(pid, cid) {
         return `Product with id: ${pid} not found in cart with id: ${cid}`
@@ -61,6 +61,17 @@ export class ErrorCause {
         - category (String): received "${category}"
         `
     }
+    static insufficientPermissions() {
+        return "You don't have enough permissions to perform this action"
+    }
+    static forbidden() {
+        return "Action is not allowed"
+    }
+    static invalidRole(role) {
+        return `
+        List of valid roles: user, premium, admin
+        Received role: ${role}`
+    }
 }
 
 export const ErrorEnums = {
@@ -71,5 +82,6 @@ export const ErrorEnums = {
     INVALID_PARAMS_ERROR: 4,
     BAD_REQUEST_ERROR: 5,
     UNAUTHORIZED_ERROR: 6,
-    CONFLICT_ERROR: 7
+    CONFLICT_ERROR: 7,
+    FORBIDDEN_ERROR: 8
 }

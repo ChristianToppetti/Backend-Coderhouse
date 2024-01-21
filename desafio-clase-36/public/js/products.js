@@ -33,7 +33,9 @@
             const productId = e.target.id
             fetch('/api/account/current')
                 .then(res => res.json())
-                .then(data => addToCart(data.cart._id, productId))
+                .then(data => {
+                    console.log(data.cart);
+                    addToCart(data.cart._id, productId)})
         })
     })
 })()

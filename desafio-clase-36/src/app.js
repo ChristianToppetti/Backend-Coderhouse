@@ -13,6 +13,7 @@ import productsApiRouter from './routers/api/products.router.js'
 import cartsApiRouter from './routers/api/carts.router.js'
 import accountApiRouter from './routers/api/account.router.js'
 import loggerTestRouter from './routers/api/logtest.router.js'
+import premiumApiRouter from './routers/api/premium.router.js'
 
 import productsRouter from './routers/views/products.router.js'
 import cartsRouter from './routers/views/carts.router.js'
@@ -65,13 +66,15 @@ app.use('/api/account', accountApiRouter)
 app.use('/api/products', productsApiRouter)
 app.use('/api/carts', cartsApiRouter)
 app.use('/loggerTest', loggerTestRouter)
+app.use('/api/users/premium', premiumApiRouter)
 
 app.use('/', accountRouter)
-app.use('/products', authJwtToken, authPolicies(['admin', 'user']), productsRouter)
-app.use('/carts', authJwtToken, authPolicies(['admin', 'user']), cartsRouter)
-app.use('/realtimeproducts', authJwtToken, authPolicies(['admin']), rtpRouter)
-app.use('/chat', authJwtToken, authPolicies(['user']), chatRouter)
-app.use('/mockingproducts', authJwtToken, authPolicies(['admin', 'user']), mockingProductsRouter)
+app.use('/products', authJwtToken, authPolicies(['admin', 'premium', 'user']), productsRouter)
+app.use('/carts', authJwtToken, authPolicies(['admin', 'premium', 'user']), cartsRouter)
+app.use('/realtimeproducts', authJwtToken, authPolicies(['premium', 'admin']), rtpRouter)
+app.use('/chat', authJwtToken, authPolicies(['user', 'premium']), chatRouter)
+app.use('/mockingproducts', authJwtToken, authPolicies(['admin', 'premium', 'user']), mockingProductsRouter)
+
 
 app.use(errorHandler)
 

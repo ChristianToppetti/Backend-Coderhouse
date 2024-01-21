@@ -31,5 +31,10 @@ export default {
     admin: {
         user: process.env.ADMIN_USER,
         password: process.env.ADMIN_PASS
+    },
+    mail: {
+        user: process.env.MAIL_USER,
+        password: process.env.MAIL_PASS,
+        port: process.env.MAIL_PORT,
     }
 }

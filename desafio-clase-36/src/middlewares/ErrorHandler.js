@@ -1,11 +1,13 @@
 import { ErrorEnums } from "../utils/CustomError.js"
 
 export default (error, req, res, next) => {
-    req.logger.error(error)
+    console.log(error)
+    req.logger.error(`Name: "${error.name}", message: "${error.message}", cause: "${error.cause}", code: "${error.code}"`)
     let code
     switch (error.code) {
         case ErrorEnums.UNKNOWN_ERROR:
             code = 500
+            break
         case ErrorEnums.BAD_REQUEST_ERROR:
             code = 400
             break
@@ -17,9 +19,13 @@ export default (error, req, res, next) => {
             break
         case ErrorEnums.ROUTING_ERROR:
             code = 404
-            break;
+            break
         case ErrorEnums.CONFLICT_ERROR:
             code = 409
+            break
+        case ErrorEnums.FORBIDDEN_ERROR:
+            code = 403
+            break
         default:
             res.json({status: 'error', message: "Unhandled error."})
             return

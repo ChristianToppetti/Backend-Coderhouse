@@ -17,6 +17,9 @@ class UserController {
         return await UserService.getByCart(cid)
     }
 
+    static async updateRole(id, role) {
+        return await UserService.updateRole(id, role)
+    }
 }
 
 export default UserController

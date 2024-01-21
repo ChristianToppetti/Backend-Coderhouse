@@ -49,4 +49,15 @@ router.get('/logout', (req, res) => {
     })
 })
 
+router.get('/recovery', (req, res) => {
+    res.render('recovery', {title: "Restablecer", rid: null})
+})
+
+router.get('/recovery/:rid', (req, res) => {
+    const { rid } = req.params
+
+    res.render('recovery', {title: "Restablecer", rid})
+})
+
+
 export default router

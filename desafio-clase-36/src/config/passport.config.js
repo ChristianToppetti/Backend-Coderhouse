@@ -61,7 +61,7 @@ export const init = () => {
 
     passport.use('register', new LocalStrategy(localOpts, async (req, email, password, done) => {
         let { first_name, last_name, age, admin } = req.body
-        const role = admin == 'on' ? "admin" : "user"
+        const role = admin == 'on' ? "premium" : "user"
 
         try {
             if(email == coderAdmin.email) {
