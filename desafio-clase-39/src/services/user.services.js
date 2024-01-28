@@ -23,7 +23,17 @@ class UserService {
     }
 
     static async getByCart(cid) {
-        return await UserDao.get({ cart: cid })
+        try {
+            return await UserDao.get({ cart: cid })
+        }
+        catch (error) {
+            throw CustomError.createError({
+                name: 'Error getting user by cart',
+                cause: ErrorCause.userNotFound(cid),
+                message: `Cart not found`,
+                code: ErrorEnums.DATA_BASE_ERROR
+            })
+        }
     }
 
     static async updatePassword(id, password) {

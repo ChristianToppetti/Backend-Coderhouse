@@ -2,7 +2,7 @@ import { bsonToObject } from "../../utils/utils.js"
 
 export default class ProductDto {
     constructor(product) {
-        this.status = '201'
+        this.status = 201
         this.payload = bsonToObject(product.docs),
         this.totalPages = product.totalPages,
         this.prevPage = product.prevPage,

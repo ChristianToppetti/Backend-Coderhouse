@@ -17,8 +17,27 @@ class CartService {
 	}
 	
 	static async updateCart(id, products) {
+		const newProducts = []
+
+		for(const e of products) {
+			if(isNaN(e.quantity)) {
+				e.quantity = 1
+			}
+
+			if(!await ProductService.productExists(e.product)) {
+				throw CustomError.createError({
+					name: 'Error updating cart',
+					cause: ErrorCause.productNotFound(e.product),
+					message: `Product doesn't exist`,
+					code: ErrorEnums.DATA_BASE_ERROR
+				})
+			}
+
+			newProducts.push({...e})
+		}
+
 		try {
-			const result = await CartDao.update(id, products)
+			const result = await CartDao.update(id, newProducts)
 
 			if(result.matchedCount == 0) {
 				throw new Error()
@@ -57,7 +76,7 @@ class CartService {
 	static async addProductToCart(cid, pid, quantity=null) {
 		const cart = await CartService.getCartById(cid)
 		const validProduct = await ProductService.productExists(pid)
-	
+		
 		if(validProduct)
 		{
 			const user = await UserService.getByCart(cid)

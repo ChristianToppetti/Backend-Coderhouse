@@ -1,8 +1,8 @@
 import ProductService from '../services/product.services.js'
 
 class ProductController {
-	static async addProduct(query) {
-		await ProductService.addProduct(query)
+	static async addProduct(data) {
+		await ProductService.addProduct(data)
 	}
 	
 	static async getProducts(limit=10, queryPage=1, querySort=null, queryFilters=null) {

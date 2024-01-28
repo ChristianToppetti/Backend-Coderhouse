@@ -14,8 +14,13 @@ class ProductDao {
         return { ...product._doc }
     }
 
+    static async getByCode(code) {
+        const product = await ProductModel.findOne({code: code})
+        return { ...product._doc }
+    }
+
     static async update(id, options) {
-		await ProductModel.updateOne({_id: id}, { ...options })
+		return await ProductModel.updateOne({_id: id}, { ...options })
 	}
     
 	static async delete(id) {

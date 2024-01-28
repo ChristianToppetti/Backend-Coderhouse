@@ -9,8 +9,13 @@ import { TicketDto } from '../../dao/dto/ticket.dto.js'
 const router = Router()
 
 router.post('/', async (req, res, next) => {
-  let result = await CartManager.addCart({})
-  res.status(201).json(result)
+  try {
+    let result = await CartController.addCart({})
+
+    res.status(201).json(result)
+  } catch (error) {
+    next(error)
+  }
 })
 
 router.get('/:cid', async (req, res, next) => {
@@ -30,6 +35,7 @@ router.get('/:cid/purchase', async (req, res, next) => {
   try {
     const user = await UserController.getUserByCart(cid)
     const ticket = await TicketController.addTicket(new TicketDto(user))
+    ticket.purchaser.password = undefined
     res.status(201).json(ticket)
   }
   catch (error) {
@@ -38,7 +44,7 @@ router.get('/:cid/purchase', async (req, res, next) => {
 })
 
 router.post('/:cid/products/:pid', async (req, res, next) => {
-  const { cid, pid } = req.params
+  const { pid, cid } = req.params
 
   try {
     const result = await CartController.addProductToCart(cid, pid)
@@ -69,21 +75,7 @@ router.put('/:cid', async (req, res, next) => {
   }
 
   try {
-    const newProducts = []
-
-    for(const e of req.body) {
-      if(isNaN(e.quantity)) {
-        e.quantity = 1
-      }
-
-      if(!await ProductController.productExists(e.product)) {
-        throw new Exception(`Product with id "${e.product}" doesn't exist.`, 404)
-      }
-
-      newProducts.push({...e})
-    }
-
-    let result = await CartController.updateCart(cid, newProducts)
+    let result = await CartController.updateCart(cid, req.body)
     res.status(201).json(result)
   }
   catch (error) {

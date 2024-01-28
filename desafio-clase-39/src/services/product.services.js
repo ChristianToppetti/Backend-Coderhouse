@@ -12,6 +12,15 @@ class ProductService {
 		}
 	}
 
+	static async productCodeExists(code) {
+		try {
+			return await ProductDao.getByCode(code)
+		} 
+		catch (error) {
+			return false
+		}
+	}
+
 	static async deleteProduct(id) {
 		if (await ProductService.productExists(id)) {
 			await ProductDao.delete(id)
@@ -29,8 +38,8 @@ class ProductService {
         if(options.status && typeof options.status == 'string') {
             options.status = options.status.toLocaleLowerCase() == 'true'
         } 
-            
-		if (!await ProductDao.update(id, options)) {
+
+		if(!await ProductService.productExists(id)) {
 			throw CustomError.createError({
 				name: 'Error updating product',
 				cause: ErrorCause.productNotFound(id),
@@ -38,7 +47,30 @@ class ProductService {
 				code: ErrorEnums.DATA_BASE_ERROR
 			})
 		}
-		return await ProductDao.getProductById(id)
+
+		try {
+			if (!await ProductDao.update(id, options)) {
+				throw CustomError.createError({
+					name: 'Error updating product',
+					cause: ErrorCause.productNotFound(id),
+					message: `Product not found`,
+					code: ErrorEnums.DATA_BASE_ERROR
+				})
+			}
+		}
+		catch (error) {
+			if (error.code === 11000) {
+				throw CustomError.createError({
+					name: 'Error updating product',
+					cause: ErrorCause.productAlreadyExists(options.code),
+					message: `Product code already exists. code must be unique`,
+					code: ErrorEnums.CONFLICT_ERROR
+				})
+			}
+			throw error
+		}
+
+		return await ProductService.getProductById(id)
 	}
 
 	static async reduceProductStock(id, quantity) {
@@ -106,9 +138,11 @@ class ProductService {
 	static async addProduct(productData) {
 
 		const {  thumbnail } = productData
-		const thumbn = thumbnail? thumbnail: "./thumbnail1.webp"
 
-		productData.thumbnail = thumbn
+		if(!thumbnail) {
+			productData.thumbnail = "./thumbnail1.webp"
+		}
+
 		productData.category = productData.category.toLowerCase()
 
 		try {

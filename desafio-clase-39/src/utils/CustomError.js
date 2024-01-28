@@ -33,7 +33,7 @@ export class ErrorCause {
         return `Error: ${error}`
     }
     static productNotFound(pid) {
-        return `Product not found with id: ${product}`
+        return `Product not found with id: ${pid}`
     }
     static cartNotFound(cid) {
         return `Cart not found with id: ${cid}`
@@ -71,6 +71,9 @@ export class ErrorCause {
         return `
         List of valid roles: user, premium, admin
         Received role: ${role}`
+    }
+    static insufficientStock() {
+        return `Not enough stock for purchase`
     }
 }
 

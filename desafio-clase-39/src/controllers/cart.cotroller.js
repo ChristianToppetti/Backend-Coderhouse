@@ -13,8 +13,8 @@ class CartController {
         return await CartService.getCartById(id, populate)
     }
     
-	static async updateCart(id, products) {
-        return await CartService.updateCart(id, products)
+	static async updateCart(id, data) {
+        return await CartService.updateCart(id, data)
 	}
 
 

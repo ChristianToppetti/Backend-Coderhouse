@@ -5,9 +5,9 @@ import { getLinkToPage } from '../../utils/utils.js'
 const router = Router()
 
 router.get('/', async (req, res, next) => {
-  const { limit, page, sort } = req.query
+  const { limit, page, sort, status, category } = req.query
   try {
-    let result = await ProductController.getProducts(limit, page, sort)
+    let result = await ProductController.getProducts(limit, page, sort, {status, category})
 
     result = { 
       ...result,
@@ -36,7 +36,7 @@ router.get('/:pid', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    await ProductController.addProduct(req.query)
+    await ProductController.addProduct(req.body)
     res.status(201).json("Product created successfully.")
   }
   catch (error) {
@@ -46,7 +46,6 @@ router.post('/', async (req, res, next) => {
 
 router.put('/:pid', async (req, res, next) => {
   const { pid } = req.params
-  
   try {
     let result = await ProductController.updateProduct(pid, {...req.body})
     res.status(201).json(result)

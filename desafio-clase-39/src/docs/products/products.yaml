@@ -1,0 +1,264 @@
+paths:
+  /api/products:
+    get:
+      summary: Get products 
+      tags:
+        - Products
+      parameters:
+        - in: query
+          name: limit
+          description: Limit of products per page
+          required: false
+          default: 10
+          schema:
+              $type: number
+        - in: query
+          name: page
+          description: Page number
+          required: false
+          default: 1
+          schema:
+            type: number
+        - in: query
+          name: sort
+          description: Sorting order
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+        - in: query
+          name: status
+          description: Filter by product status
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: category
+          description: Filter by product category
+          required: false
+          schema:
+            type: string
+      responses:
+          201:
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  $ref: '#/components/schemas/Response Object'
+          404:
+            description: Invalid query, page not found
+    post:
+      summary: Create a new product
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/newProduct'
+      responses:
+          201:
+            description: Product created successfully
+          409:
+            description: Product already exists. code must be unique
+          401:
+            description: Product data is not valid
+
+  /api/products/{pid}:
+    get:
+      summary: Get product by ID
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: pid
+          description: Product ID
+          required: true
+          schema:
+            type: string
+      responses:
+          201:
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  $ref: '#/components/schemas/Product'
+          500:
+            description: Product not found in database
+    put:
+      summary: Update a product
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: pid
+          description: Product ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Product data to be updated (all fields are optional)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/newProduct'
+      responses:
+          201:
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  $ref: '#/components/schemas/Product'
+          409:
+            description: Product code already exists. code must be unique
+          500:
+            description: Product not found in database
+    delete:
+      summary: Delete a product
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: pid
+          description: Product ID
+          required: true
+          schema:
+            type: string
+      responses:
+          201:
+            description: Product deleted successfully
+          500:
+            description: Product not found in database
+
+components:
+  schemas:
+    Response Object:
+      type: object
+      properties:
+        status:
+          type: number
+          description: Response status code
+        payload:
+          type: array
+          description: Array of products
+          items:
+            type: object
+            $ref: '#/components/schemas/Product'
+        totalPages:
+          type: number
+          description: Total number of pages
+        prevPage:
+          type: number | null
+          description: Previous page
+        nextPage:
+          type: number | null
+          description: Next page
+        page:
+          type: number
+          description: Current page
+        hasPrevPage:
+          type: boolean
+          description: Whether there is a previous page or not
+        hasNextPage:
+          type: boolean
+          description: Whether there is a next page or not
+        prevLink:
+          type: string | null
+          description: Link to the previous page
+        nextLink:
+          type: string | null
+          description: Link to the next page
+      example:
+        status: 201
+        payload: [Array of products]
+        totalPages: 4
+        prevPage: null
+        nextPage: 2
+        page: 1
+        hasPrevPage: false
+        hasNextPage: true
+        prevLink: null
+        nextLink: "http://localhost:8080/products?limit=1&page=2"
+
+    Product:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Product ID generated by MongoDB
+        title:
+          type: string
+          description: Product title
+        code:
+          type: string
+          description: Product unique code
+        price:
+          type: mongoose.Decimal128
+          description: Product price
+        description:
+          type: string
+          description: Product description
+        status:
+          type: boolean
+          description: Product status whether it is an active product or not
+        stock:
+          type: number
+          description: Product stock
+        thumbnail:
+          type: string
+          description: Product thumbnail
+        category:
+          type: string
+          description: Product category
+        owner:
+          type: string
+          description: Email of who created the product
+          
+  requestBodies:
+    newProduct:
+      type: object
+      required: true
+      properties:
+        title:
+          type: string
+          description: Product title
+        code:
+          type: string
+          description: Product unique code
+        price:
+          type: float
+          description: Product price
+        description:
+          type: string
+          description: Product description
+        status:
+          type: boolean
+          description: Product status whether it is an active product or not
+        stock:
+          type: number
+          description: Product stock
+        thumbnail:
+          type: string
+          description: Product thumbnail
+        category:
+          type: string
+          description: Product category
+        owner:
+          type: string
+          description: Email of who created the product
+      example:
+        title: Product 1
+        code: P001
+        price: 100.2
+        description: Product description
+        status: true
+        stock: 10
+        thumbnail: ./images/product-1.png
+        category: remeras
+        owner: 2G3Rv@example.com   
+                

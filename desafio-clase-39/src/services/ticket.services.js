@@ -2,7 +2,7 @@ import TicketDao from "../dao/ticket.dao.js"
 import CartService from "../services/cart.services.js"
 import ProductService from "../services/product.services.js"
 import UserService from "../services/user.services.js"
-
+import { CustomError, ErrorCause, ErrorEnums } from '../utils/CustomError.js'
 
 const updateStock = async (products) => {
     products.forEach(async (product) => await ProductService.reduceProductStock(product.pid, product.quantity))
@@ -32,9 +32,12 @@ class TicketService {
         })
 
         if (ticket.products.length == 0) {
-            return {
-                error: 'No products with stock available'
-            }
+            throw CustomError.createError({
+                name: 'Error making purchase',
+                cause: ErrorCause.insufficientStock(),
+                message: 'Products with stock unavailable',
+                code: ErrorEnums.DATA_BASE_ERROR
+            })
         }
 
         await TicketDao.add(ticket)

@@ -8,6 +8,8 @@ import { URI } from './db/mongodb.js'
 import passport from 'passport'
 import { init as initPassportConfig } from './config/passport.config.js'
 import cookieParser from 'cookie-parser'
+import swaggerJsdoc from 'swagger-jsdoc'
+import swaggerUiExpress from 'swagger-ui-express'
 
 import productsApiRouter from './routers/api/products.router.js'
 import cartsApiRouter from './routers/api/carts.router.js'
@@ -25,7 +27,22 @@ import mockingProductsRouter from './routers/views/mock.router.js'
 import errorHandler from './middlewares/ErrorHandler.js'
 import { addLogger } from './config/logger.js'
 
+
 const app = express()
+
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.1',
+        info: {
+            title: 'Documentacion',
+            description: 'Documentacion del projecto Backend de Coderhouse'
+        }
+    },
+    apis: [`${__dirname}/docs/**/*.yaml`]
+}
+
+const specs = swaggerJsdoc(swaggerOptions)
+app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
 
 const AUTH_TYPE = process.env.AUTH_TYPE
 const SESSION_SECRET = process.env.SESSION_SECRET
