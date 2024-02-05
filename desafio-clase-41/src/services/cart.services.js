@@ -82,7 +82,7 @@ class CartService {
 			const user = await UserService.getByCart(cid)
 			const product = await ProductService.getProductById(pid)
 
-			if (user.email == product.owner) {
+			if (user?.email == product.owner) {
 				throw CustomError.createError({
 					name: 'Error adding product to cart',
 					cause: ErrorCause.forbidden(),

@@ -112,7 +112,7 @@ export const init = () => {
                 user = await dbUser
             }
         }
-        
+
         if(!user) {
             const error = CustomError.createError({
                 name: 'Error login user',

@@ -134,6 +134,20 @@ class ProductService {
 			})
 		}
 	}
+
+	static async getProductByCode(code) {
+		try {
+			return await ProductDao.getByCode(code)
+		}
+		catch (error) {
+			throw CustomError.createError({
+				name: 'Error getting product',
+				cause: ErrorCause.productNotFound(code),
+				message: `Product not found`,
+				code: ErrorEnums.DATA_BASE_ERROR
+			})
+		}
+	}
     
 	static async addProduct(productData) {
 

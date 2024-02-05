@@ -43,7 +43,6 @@ router.get('/:cid/purchase', async (req, res, next) => {
 
 router.post('/:cid/products/:pid', async (req, res, next) => {
   const { pid, cid } = req.params
-
   try {
     const result = await CartController.addProductToCart(cid, pid)
     res.status(201).json(result)
