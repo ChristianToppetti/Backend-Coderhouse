@@ -25,10 +25,8 @@ router.post('/login', passport.authenticate('login', { session: boolSession, fai
         if (payload.email == config.admin.user) {
             payload.cart = await CartService.getAdminCart()
         }
-        console.log("wat");
         res.status(201).cookie("access_token", generateJwtToken(payload), { signed: true, httpOnly: true, maxAge: 1000 * 60 * 10 })
         .redirect('/products')
-        console.log("wat2");
     }
     else {
         req.session.user = req.user
