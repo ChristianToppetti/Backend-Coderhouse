@@ -1,0 +1,15 @@
+<article>
+  <form action="/api/account/login" method="post">
+    <header>
+      <h1>Login</h1>
+    </header>
+    <input type="email" name="email" placeholder="Correo" required />
+    <input type="password" name="password" placeholder="Contraseña" required />
+    <footer>
+      <input type="submit" value="Enviar">
+    </footer>
+  </form>
+  <div><a href="/recovery">Olvide mi contraseña</a></div>
+  <div>No tenes cuenta?, <a href="/register">Registrate</a></div>
+  <div><a href="/api/account/github">Ingresar con Github</a></div>
+</article>

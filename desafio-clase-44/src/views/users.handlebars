@@ -1,0 +1,19 @@
+<div>
+  <div class="cart_container">
+    {{#if users}}
+      {{#each users}}
+        <div class="cart_item">
+          <div>
+            <p><strong>Nombre: </strong>{{this.name}}</p>
+            <p><strong>Correo: </strong>{{this.email}}</p>
+            <p><strong>Rol: </strong>{{this.role}}</p>  
+          </div>
+        </div>
+      {{/each}}
+    {{else}}
+      <h3 style="text-align: center; margin: 1rem">No hay usuarios</h3>
+    {{/if}}
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
