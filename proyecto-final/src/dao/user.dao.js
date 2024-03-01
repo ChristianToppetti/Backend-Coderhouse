@@ -9,7 +9,8 @@ class UserDao {
             age,
             password,
             cart,
-            role
+            role,
+            last_connection: Date.now()
         })
     }
     

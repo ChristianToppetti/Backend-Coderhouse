@@ -5,6 +5,10 @@ class UserController {
         return await UserService.addUser(user)
     }
 
+    static async addDocument(uid, name, path) {
+        return await UserService.addDocument(uid, name, path)
+    }
+
     static async getUser(email) {
         return await UserService.getByEmail(email)
     }
@@ -17,20 +21,32 @@ class UserController {
         return await UserService.getByCart(cid)
     }
 
+    static async getUserByEmail(email) {
+        return await UserService.getByEmail(email)
+    }
+
+    static async getAllUsers(allData = false) {
+        return await UserService.getAll(allData)
+    }
+
     static async updateRole(id, role) {
         return await UserService.updateRole(id, role)
     }
 
-    static async getAllUsers() {
-        return await UserService.getAll()
+    static async updateUserPassword(id, password) {
+        return await UserService.updatePassword(id, password)
     }
 
     static async updateConnectionDate(id) {
         return await UserService.updateDate(id)
     }
 
-    static async addDocument(uid, name, path) {
-        return await UserService.addDocument(uid, name, path)
+    static async deleteInactiveUsers(inactiveDays) {
+        return await UserService.deleteInactiveUsers(inactiveDays)
+    }
+
+    static async deleteUser(id) {
+        return await UserService.deleteUser(id)
     }
 }
 

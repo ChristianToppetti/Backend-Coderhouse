@@ -2,6 +2,7 @@ import nodemailer from 'nodemailer'
 import config from '../config/config.js'
 import RecoveryDao from '../dao/recovoery.dao.js'
 import UserService from './user.services.js'
+import path from 'path'
 import { __dirname } from '../utils/utils.js'
 
 class EmailService {
@@ -61,11 +62,11 @@ class EmailService {
             <a href="http://localhost:${config.port}/recovery/${recoveryId}">Restablecer contraseña</a>
             <div style="text-align: center;"> <img src="cid:lock" /> </div>`,
             [
-                // {
-                //   filename: 'lock.png',
-                //   path: path.join(__dirname, './images/lock.png'),
-                //   cid: 'lock',
-                // }
+                {
+                  filename: 'lock.png',
+                  path: path.join(__dirname, '../public/images/lock.png'),
+                  cid: 'lock',
+                }
             ]
         )
     }

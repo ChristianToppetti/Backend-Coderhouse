@@ -8,12 +8,31 @@
             <p><strong>Correo: </strong>{{this.email}}</p>
             <p><strong>Rol: </strong>{{this.role}}</p>  
           </div>
+          <div id="{{this.id}}" class="user_box">
+            <div>
+              <input type="checkbox" id="delete_{{this.id}}">
+              <label for="delete_{{this.id}}">Eliminar usuario</label>
+            </div>
+            <fieldset style="border: 1px solid black; padding: 1rem;">
+              <legend>Modificar rol</legend>
+              <div>
+                <input type="radio" id="role_user_{{this.id}}" name="role_{{this.id}}" value="user"/>
+                <label for="role_user_{{this.id}}">User</label>
+                <input type="radio" id="role_premium_{{this.id}}" name="role_{{this.id}}" value="premium" />
+                <label for="role_premium_{{this.id}}">Premium</label>
+                <input type="radio" id="role_admin_{{this.id}}" name="role_{{this.id}}" value="admin" />
+                <label for="role_admin_{{this.id}}">Admin</label>
+              </div>
+            </fieldset>
+          </div>
         </div>
       {{/each}}
     {{else}}
       <h3 style="text-align: center; margin: 1rem">No hay usuarios</h3>
     {{/if}}
   </div>
+  <button id="apply_changes" {{#unless users}}disabled{{/unless}}>Aplicar cambios</button>
 </div>
 
+<script src="/js/users_menu.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

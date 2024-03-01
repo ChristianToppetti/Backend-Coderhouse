@@ -12,67 +12,6 @@ class CartService {
 		return await CartDao.add({})
 	}
 
-	static async getCarts() {
-		return await CartDao.get()
-	}
-	
-	static async updateCart(id, products) {
-		const newProducts = []
-
-		for(const e of products) {
-			if(isNaN(e.quantity)) {
-				e.quantity = 1
-			}
-
-			if(!await ProductService.productExists(e.product)) {
-				throw CustomError.createError({
-					name: 'Error updating cart',
-					cause: ErrorCause.productNotFound(e.product),
-					message: `Product doesn't exist`,
-					code: ErrorEnums.DATA_BASE_ERROR
-				})
-			}
-
-			newProducts.push({...e})
-		}
-
-		try {
-			const result = await CartDao.update(id, newProducts)
-
-			if(result.matchedCount == 0) {
-				throw new Error()
-			}
-
-			return await CartDao.getById(id)
-		}
-		catch (error) {
-			throw CustomError.createError({
-				name: 'Error updating cart',
-				cause: ErrorCause.cartNotFound(id),
-				message: `Cart doesn't exist`,
-				code: ErrorEnums.DATA_BASE_ERROR
-			})
-		}
-	}
-
-	static async getCartById(id, populate=false) {
-		try {
-			const cart = await CartDao.getById(id)
-			if(populate) {
-				return await cart.populate('products.product') 
-			}
-			return cart
-		} 
-		catch (error) {
-			throw CustomError.createError({
-				name: 'Error getting cart',
-				cause: ErrorCause.cartNotFound(id),
-				message: `Cart doesn't exist`,
-				code: ErrorEnums.DATA_BASE_ERROR
-			})
-		}
-	}
-
 	static async addProductToCart(cid, pid, quantity=null) {
 		const cart = await CartService.getCartById(cid)
 		const validProduct = await ProductService.productExists(pid)
@@ -114,6 +53,79 @@ class CartService {
 		})
 	}
 
+	static async getCarts() {
+		return await CartDao.get()
+	}
+	
+	static async getCartById(id, populate=false) {
+		try {
+			const cart = await CartDao.getById(id)
+			if(populate) {
+				return await cart.populate('products.product') 
+			}
+			return cart
+		} 
+		catch (error) {
+			throw CustomError.createError({
+				name: 'Error getting cart',
+				cause: ErrorCause.cartNotFound(id),
+				message: `Cart doesn't exist`,
+				code: ErrorEnums.DATA_BASE_ERROR
+			})
+		}
+	}
+
+	static async getAdminCart() {
+		let adminCart = await CartDao.get({ _admincart: true })
+		
+		if (!adminCart) {
+			const newCart = await CartService.addNewCart()
+			await CartDao.updateFields(newCart._id, { _admincart: true })
+			adminCart = await CartDao.get({ _admincart: true })
+		}
+
+		return adminCart
+	}
+
+	static async updateCart(id, products) {
+		const newProducts = []
+
+		for(const e of products) {
+			if(isNaN(e.quantity)) {
+				e.quantity = 1
+			}
+
+			if(!await ProductService.productExists(e.product)) {
+				throw CustomError.createError({
+					name: 'Error updating cart',
+					cause: ErrorCause.productNotFound(e.product),
+					message: `Product doesn't exist`,
+					code: ErrorEnums.DATA_BASE_ERROR
+				})
+			}
+
+			newProducts.push({...e})
+		}
+
+		try {
+			const result = await CartDao.update(id, newProducts)
+
+			if(result.matchedCount == 0) {
+				throw new Error()
+			}
+
+			return await CartDao.getById(id)
+		}
+		catch (error) {
+			throw CustomError.createError({
+				name: 'Error updating cart',
+				cause: ErrorCause.cartNotFound(id),
+				message: `Cart doesn't exist`,
+				code: ErrorEnums.DATA_BASE_ERROR
+			})
+		}
+	}
+
 	static async deleteProductFromCart(cid, pid) {
 		const cart = await CartService.getCartById(cid)		
 		const productIndex = cart.products.findIndex(e => e.product.toString() == pid)
@@ -131,16 +143,18 @@ class CartService {
 		})
 	}
 
-	static async getAdminCart() {
-		let adminCart = await CartDao.get({ _admincart: true })
-		
-		if (!adminCart) {
-			const newCart = await CartService.addNewCart()
-			await CartDao.updateFields(newCart._id, { _admincart: true })
-			adminCart = await CartDao.get({ _admincart: true })
+	static async deleteCart(id) {
+		try {
+			return await CartDao.delete(id)
 		}
-
-		return adminCart
+		catch (error) {
+			throw CustomError.createError({
+				name: 'Error deleting cart',
+				cause: ErrorCause.cartNotFound(id),
+				message: `Cart doesn't exist`,
+				code: ErrorEnums.DATA_BASE_ERROR
+			})
+		}
 	}
 }
 

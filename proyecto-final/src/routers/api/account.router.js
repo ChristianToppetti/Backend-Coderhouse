@@ -1,13 +1,12 @@
 import { Router } from 'express'
 import passport from 'passport'
 import config from '../../config/config.js'
-import { generateJwtToken, authJwtToken } from '../../utils/utils.js'
+import { generateJwtToken, authJwtToken, authPolicies } from '../../utils/utils.js'
 import { FrontUser } from '../../dao/dto/user.dto.js'
-import CartService from '../../services/cart.services.js'
-import UserService from '../../services/user.services.js'
-import EmailService from '../../services/email.services.js'
 import { createHash, isValidPassword, uploader } from '../../utils/utils.js'
 import UserController from '../../controllers/user.controller.js'
+import CartController from '../../controllers/cart.cotroller.js'
+import EmailService from '../../services/email.services.js'
 
 const router = Router()
 const boolSession = config.auth.authType === 'SESSION'
@@ -25,7 +24,7 @@ router.post('/login', passport.authenticate('login', { session: boolSession, fai
         }
 
         if (payload.email == config.admin.user) {
-            payload.cart = await CartService.getAdminCart()
+            payload.cart = await CartController.getAdminCart()
         }
         else {
             await UserController.updateConnectionDate(req.user._id)
@@ -38,7 +37,7 @@ router.post('/login', passport.authenticate('login', { session: boolSession, fai
         req.session.user = req.user
 
         if (req.user.email == config.admin.user) {
-            req.session.user.cart = await CartService.getAdminCart()
+            req.session.user.cart = await CartController.getAdminCart()
         }
         else {
             await UserController.updateConnectionDate(req.session.user._id)
@@ -95,7 +94,7 @@ router.get('/current', authJwtToken, (req, res) => {
 router.post('/recovery', async (req, res, next) => {
     try {
         const { email } = req.body
-        const user = await UserService.getByEmail(email)
+        const user = await UserController.getUserByEmail(email)
 
         if (user) {
             // const emailService = EmailService.getInstance()
@@ -121,7 +120,7 @@ router.post('/recovery/:rid', async (req, res, next) => {
         if (user) {
             if (!isValidPassword(password, user.password)) {
                 const userId = user._id.toString()
-                await UserService.updatePassword(userId, createHash(password))
+                await UserController.updateUserPassword(userId, createHash(password))
                 res.status(201).send(`Password updated successfully.`)
                 return
             }
@@ -144,14 +143,12 @@ router.get('/premium/:uid', async (req, res, next) => {
         const newRole = user.role === 'user' ? 'premium' : 'user'
 
         if(newRole === "premium") {
-            console.log("ok");
             let docs = {}
             user.documents.forEach(doc => {
                 docs[doc.name] = true
             })
 
             const { identity_doc, proof_address, proof_bankstate } = docs
-            console.log("what", identity_doc, proof_address, proof_bankstate);
             if( !identity_doc || !proof_address || !proof_bankstate) {
                 res.status(400).send('You need to upload verification documents to become premium.')
                 return
@@ -193,6 +190,43 @@ router.post('/:uid/documents', uploader.fields(
 router.get('/', async (req, res, next) => {
     try {
         res.status(201).json(await UserController.getAllUsers())
+    }
+    catch (error) {
+        next(error)
+    }
+})
+
+router.delete('/', async (req, res, next) => {
+    try {
+        await UserController.deleteInactiveUsers(2)
+        res.status(201).send(`Successfully deleted all users with more than 2 inactive days.`)
+    }
+    catch (error) {
+        next(error)
+    }
+})
+
+router.delete('/:uid', authJwtToken, authPolicies(['admin']), async (req, res, next) => {
+    try {
+        const { uid } = req.params
+        await UserController.deleteUser(uid)
+        res.status(201).json(`User with id "${uid}" deleted successfully.`)
+    }
+    catch (error) {
+        next(error)
+    }
+})
+
+router.post('/:uid/setrole/:role', authJwtToken, authPolicies(['admin']), async (req, res, next) => {
+    try {
+        const { uid, role } = req.params
+        if(role != "admin" && role != "premium" && role != "user") {
+            res.status(400).send('Invalid role.')
+        }
+        else {
+            await UserController.updateRole(uid, role)
+            res.status(201).json(`Role of user with id "${uid}" set to "${role}" successfully.`)
+        }
     }
     catch (error) {
         next(error)

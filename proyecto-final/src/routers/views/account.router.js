@@ -69,12 +69,13 @@ router.get('/recovery/:rid', (req, res) => {
 })
 
 router.get('/users', authJwtToken, authPolicies(['admin']), async (req, res) => {
-    const allUsers = await UserController.getAllUsers()
+    const allUsers = await UserController.getAllUsers(true)
     const users = allUsers.map(e => {
         return { 
             name: e.first_name, 
             email: e.email,
-            role: e.role
+            role: e.role,
+            id: e._id
         }
     })
 

@@ -26,6 +26,9 @@ export default (error, req, res, next) => {
         case ErrorEnums.FORBIDDEN_ERROR:
             code = 403
             break
+        case ErrorEnums.UNAUTHORIZED_ERROR:
+            code = 401
+            break
         default:
             res.json({status: 'error', message: "Unhandled error."})
             return
