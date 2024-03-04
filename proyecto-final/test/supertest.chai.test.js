@@ -6,7 +6,8 @@ import UserService from '../src/services/user.services.js'
 import { init } from '../src/db/mongodb.js'
 import { createHash } from '../src/utils/utils.js'
 
-const requester = supertest(`http://localhost:${config.port}`)
+const url = config.env === 'developement' ? `http://localhost:${config.port}` : `https://toppetti-proyectofinal.up.railway.app`
+const requester = supertest(url)
 
 describe('Products, Users and Sessions testing', function(){
   this.timeout(5000)

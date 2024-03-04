@@ -16,14 +16,16 @@ router.get('/', async (req, res, next) => {
       prevLink: result.hasPrevPage ? getLinkToPage(req, result.prevPage) : null,
       nextLink: result.hasNextPage ? getLinkToPage(req, result.nextPage) : null
     }
-    
-    const { first_name, last_name, age, role } = user
+
+    const { first_name, last_name, age, role, _id: uid } = user
     const cartId = user.cart._id
     res.render('products', {
+        uid,
         first_name, 
         last_name, 
         age, 
-        level: role == "admin" ? 'Admin' : role == "premium" ? 'Premium' : 'Usuario', 
+        level: role == "admin" ? 'Admin' : role == "premium" ? 'Premium' : 'Usuario',
+        highLevel: role == "admin" || role == "premium" ? true : false,
         cartId, 
         ...result 
       })

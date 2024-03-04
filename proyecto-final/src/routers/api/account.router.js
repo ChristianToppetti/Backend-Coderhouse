@@ -121,6 +121,7 @@ router.post('/recovery/:rid', async (req, res, next) => {
             if (!isValidPassword(password, user.password)) {
                 const userId = user._id.toString()
                 await UserController.updateUserPassword(userId, createHash(password))
+                await EmailService.deleteRecovery(rid)
                 res.status(201).send(`Password updated successfully.`)
                 return
             }
@@ -150,7 +151,8 @@ router.get('/premium/:uid', async (req, res, next) => {
 
             const { identity_doc, proof_address, proof_bankstate } = docs
             if( !identity_doc || !proof_address || !proof_bankstate) {
-                res.status(400).send('You need to upload verification documents to become premium.')
+                res.status(400).send(`You need to upload verification documents to become premium.
+                <a href="/documents">UPLOAD DOCUMENTS</a>`)
                 return
             }
         }
@@ -181,7 +183,12 @@ router.post('/:uid/documents', uploader.fields(
         await UserController.addDocument(uid, "proof_address", proof_address[0].path)
         await UserController.addDocument(uid, "proof_bankstate", proof_bankstate[0].path)
 
-        res.status(201).send(`Updated documents successfully.`)
+        res.status(201).send(`Updated documents successfully.
+        <script>
+            setTimeout(() => {
+                window.location = "/"
+            }, 1500)
+        </script>`)
     } catch (error) {
         next(error)
     }

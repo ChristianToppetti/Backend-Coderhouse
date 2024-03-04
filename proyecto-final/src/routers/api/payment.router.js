@@ -3,20 +3,15 @@ import PaymentsService from '../../services/payment.services.js'
 import UserController from '../../controllers/user.controller.js'
 import TicketController from '../../controllers/ticket.cotroller.js'
 import { TicketDto } from '../../dao/dto/ticket.dto.js'
+import { getLogger } from '../../config/logger.js'
 
 const router = Router()
-
-const address = {
-	street: 'Siempre viva',
-	postal_code: '1234213',
-	external_number: '100',
-}
 
 router.get('/:cid/payment-intents', async (req, res, next) => {
 	const { cid } = req.params
 	try {
 		const user = await UserController.getUserByCart(cid)
-		const newTicket = new TicketDto(user)
+		const newTicket = await TicketController.addTicket(new TicketDto(user))
 
 		const sessionData = {
 			line_items: newTicket.products.map((product) => {
@@ -24,10 +19,11 @@ router.get('/:cid/payment-intents', async (req, res, next) => {
 					price_data: {
 						currency: 'usd',
 						product_data: {
-							pid: product.pid,
 							name: product.title,
+							metadata: {pid: `${product.pid._id}`},
 						},
-						unit_amount: product.price * 100,
+
+						unit_amount: parseFloat(product.price) * 100,
 					},
 					quantity: product.quantity,
 				}
@@ -37,11 +33,10 @@ router.get('/:cid/payment-intents', async (req, res, next) => {
 			redirect_on_completion: 'never',
 			billing_address_collection: 'required',
 		}
-
+		
 		const service = new PaymentsService()
 		const session = await service.createCheckout(sessionData)
 
-		await TicketController.addTicket(newTicket)
 		res.status(201).json({ 
 			clientSecret: session.client_secret, 
 			ticketCode: newTicket.code 

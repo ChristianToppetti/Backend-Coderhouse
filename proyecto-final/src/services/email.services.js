@@ -62,12 +62,12 @@ class EmailService {
         await RecoveryDao.create(email)
         const recovery = await RecoveryDao.getByUid(email)
         const recoveryId = recovery._id.toString()
-
+        const url = config.env === 'developement' ? `http://localhost:${config.port}` : `https://toppetti-proyectofinal.up.railway.app`
         return this.sendEmail(
             email, 
             `Restablecimiento de contraseña`, 
             `<p>Hemos recibido una solicitud para restablecer tu contraseña, haga click en el siguiente enlace para proceder:</p>
-            <a href="http://localhost:${config.port}/recovery/${recoveryId}">Restablecer contraseña</a>
+            <a href="${url}/recovery/${recoveryId}">Restablecer contraseña</a>
             <div style="text-align: center;"> <img src="cid:lock" /> </div>`,
             [
                 {
@@ -77,6 +77,10 @@ class EmailService {
                 }
             ]
         )
+    }
+
+    async deleteRecovery(rid) {
+        await RecoveryDao.delete(rid)
     }
 
     static getInstance() {

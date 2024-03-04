@@ -12,6 +12,10 @@ class RecoveryDao {
     static async getByRid(id) {
         return await RecoveryModel.findOne({_id: id})
     }
+
+    static async delete(id) {
+        await RecoveryModel.deleteOne({_id: id})
+    }
 }
 
 export default RecoveryDao

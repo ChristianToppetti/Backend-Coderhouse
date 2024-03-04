@@ -1,16 +1,16 @@
 <div>
   <h1>Documentos de usuario</h1>
-  <div class="products_container">
+  <div class="products_container" style="color: white; background-color: grey;">
     <form action="/api/account/{{uid}}/documents" method="POST" enctype="multipart/form-data">
 
-      <label for="identity_doc">Cargar documento de identidad</label>
-      <input type="file" name="identity_doc" required>
+      <label for="identity_doc" style="color: white;">Cargar documento de identidad</label>
+      <input type="file" name="identity_doc" style="color: white;" required>
 
-      <label for="proof_address">Cargar comprobante de domicilio</label>
-      <input type="file" name="proof_address" required>
+      <label for="proof_address" style="color: white;" >Cargar comprobante de domicilio</label>
+      <input type="file" name="proof_address" style="color: white;" required>
 
-      <label for="proof_bankstate">Cargar comprobante de estado de cuenta</label>
-      <input type="file" name="proof_bankstate" required>
+      <label for="proof_bankstate" style="color: white;">Cargar comprobante de estado de cuenta</label>
+      <input type="file" name="proof_bankstate" style="color: white;" required>
       <button type="submit">Cargar</button>
     </form>
   </div>

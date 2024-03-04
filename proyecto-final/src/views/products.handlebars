@@ -5,7 +5,16 @@
     <div>
       <a href="/carts/{{cartId}}">Ir al carrito</a>
     </div>
-
+    {{#unless highLevel}}
+      <div>
+        <a href="../api/account/premium/{{uid}}">Cambiar a premium</a>
+      </div>
+    {{/unless}}
+    {{#if highLevel}}
+      <div>
+        <a href="/realtimeproducts">Crear producto</a>
+      </div>
+    {{/if}}
     <div>
       <a href="/logout">Cerrar sesión</a>
     </div>

@@ -16,9 +16,20 @@
                 showConfirmButton: true
             })
         }
+        const response = await (await fetch(`/api/payment/${user.cart._id}/payment-intents`)).json()
+        
+        if(response.status == "error") {
+            console.log("ERROR: ", response)
+            return Swal.fire({
+                position: "center",
+                icon: 'error',
+                title: response.message,
+                text: response.cause,
+                showConfirmButton: true
+            })
+        }
 
-        const { clientSecret, ticketCode } = await (await fetch(`/api/payment/${user.cart._id}/payment-intents`)).json()
-
+        const { clientSecret, ticketCode } = response
         if(!clientSecret || !ticketCode) return location.reload()
 
         const checkout = await stripe.initEmbeddedCheckout({
@@ -51,7 +62,7 @@
 
     const handleComplete = async (ticketCode) => {
         const ticket = await (await fetch(`/api/payment/success?id=${ticketCode}`)).json()
-        console.log(ticket)
+        console.log("Ticket: ",ticket)
         Swal.fire({
             position: "center",
             title: `Purchase completed successfully`,

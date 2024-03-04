@@ -18,17 +18,8 @@ const updateCart = async (uid, products) => {
 }
 
 class TicketService {
-    static async addTicket(ticket) {
-        ticket.products = ticket.products.filter((product) => {
-            if (product.stock >= product.quantity) {
-                return {
-                    pid: product.pid, 
-                    quantity: product.quantity
-                }
-            }
-        })
-
-        if (ticket.products.length == 0) {
+    static async addTicket(ticketData) {
+        if (ticketData.products.length == 0) {
             throw CustomError.createError({
                 name: 'Error making purchase',
                 cause: ErrorCause.insufficientStock(),
@@ -36,9 +27,8 @@ class TicketService {
                 code: ErrorEnums.DATA_BASE_ERROR
             })
         }
-
-        await TicketDao.add(ticket)
-        return await TicketDao.get({code: ticket.code})
+        await TicketDao.add(ticketData)
+        return await TicketDao.get({code: ticketData.code})
     }
 
     static async getByCode(code) {

@@ -98,7 +98,13 @@ const storage = multer.diskStorage({
     destination: (req, file, callback) => {
         let folderPath = '../public/default'
         if(file.fieldname === 'identity_doc' || file.fieldname === 'proof_address' || file.fieldname === 'proof_bankstate') {
-            folderPath = path.join(__dirname, '../public/documents')
+            if(config.env === 'developement') {
+                folderPath = path.join(__dirname, '../public/documents')
+            }
+            else {
+                // Fix para railway
+                folderPath = path.join(__dirname, '../public/')
+            }
         } else if(file.fieldname === 'product_image') {
             folderPath = path.join(__dirname, '../public/products')
         } else if(file.fieldname === 'profile_image') {
@@ -107,7 +113,7 @@ const storage = multer.diskStorage({
         callback(null, folderPath)
     },
     filename: (req, file, callback) => {
-        callback(null, file.originalname)
+        callback(null, `${file.fieldname}_${file.originalname}`)
     },
 })
   
