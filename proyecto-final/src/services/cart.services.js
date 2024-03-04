@@ -41,7 +41,7 @@ class CartService {
 				})
 			}
 
-			let result = await CartDao.update(cid, cart.products)
+			let result = await CartDao.update(cid, {products: cart.products})
 			return result
 		}
 		
@@ -130,9 +130,13 @@ class CartService {
 		const cart = await CartService.getCartById(cid)		
 		const productIndex = cart.products.findIndex(e => e.product.toString() == pid)
 
-		if(productIndex != -1) {			
-			cart.products.splice(productIndex, 1)
-			return await CartDao.update(cid, cart.products)
+		if(productIndex != -1) {
+			let result = await CartDao.update(cid, {
+				$pull: {
+					products: { product: pid }
+				}
+			})	
+			return result
 		}
 
 		throw CustomError.createError({

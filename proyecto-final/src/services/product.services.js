@@ -1,5 +1,7 @@
 import ProductDao from '../dao/product.dao.js'
 import ProductDto from '../dao/dto/product.dto.js'
+import UserServices from './user.services.js'
+import EmailServices from './email.services.js'
 import { CustomError, ErrorCause, ErrorEnums } from '../utils/CustomError.js'
 
 class ProductService {
@@ -22,8 +24,16 @@ class ProductService {
 	}
 
 	static async deleteProduct(id) {
-		if (await ProductService.productExists(id)) {
+		const product = await ProductService.productExists(id)
+		if (product) {
+			const owner = await UserServices.getByEmail(product.owner)
+
 			await ProductDao.delete(id)
+
+			if(owner.role == 'premium') {
+				await EmailServices.sendEmail(owner.email, `Tu producto ha sido eliminado`, `Tu producto "${product.title}" ha sido eliminado`)
+			}
+			
 		} else {
 			throw CustomError.createError({
 				name: 'Error deleting product',

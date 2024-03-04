@@ -41,7 +41,7 @@ export const init = () => {
                 user = await UserController.addUser({
                     first_name: profile._json.login,
                     last_name: '',
-                    email: profile._json.id,
+                    email: profile._json.email || profile._json.id,
                     password: '',
                     role: "user"
                 })

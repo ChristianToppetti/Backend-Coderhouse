@@ -10,11 +10,13 @@ import { init as initPassportConfig } from './config/passport.config.js'
 import cookieParser from 'cookie-parser'
 import swaggerJsdoc from 'swagger-jsdoc'
 import swaggerUiExpress from 'swagger-ui-express'
+import cors from 'cors'
 
 import productsApiRouter from './routers/api/products.router.js'
 import cartsApiRouter from './routers/api/carts.router.js'
 import accountApiRouter from './routers/api/account.router.js'
 import loggerTestRouter from './routers/api/logtest.router.js'
+import paymentApiRouter from './routers/api/payment.router.js'
 
 import productsRouter from './routers/views/products.router.js'
 import cartsRouter from './routers/views/carts.router.js'
@@ -63,6 +65,7 @@ else {
     }))
 }
 
+app.use(cors())
 app.use(addLogger)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -82,6 +85,7 @@ app.use('/api/account', accountApiRouter)
 app.use('/api/products', productsApiRouter)
 app.use('/api/carts', cartsApiRouter)
 app.use('/loggerTest', loggerTestRouter)
+app.use('/api/payment', authJwtToken, authPolicies(['premium', 'user']), paymentApiRouter)
 
 app.use('/', accountRouter)
 app.use('/products', authJwtToken, authPolicies(['admin', 'premium', 'user']), productsRouter)

@@ -69,6 +69,7 @@ socketServer.on('connection', async (socket) => {
             socketServer.emit('update-products', await getProducts())
         }
         catch (error) {
+            console.log(error);
             getLogger().error(error)
             socketServer.emit('error', error)
         }

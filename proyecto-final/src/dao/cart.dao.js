@@ -13,8 +13,8 @@ class CartDao {
 		return await CartModel.findOne({_id: id})
 	}
 
-    static async update(id, products) {
-		return await CartModel.updateOne({_id: id}, {products})
+    static async update(id, options) {
+		return await CartModel.updateOne({_id: id}, options)
 	}
 
 	static async updateFields(id, fields) {

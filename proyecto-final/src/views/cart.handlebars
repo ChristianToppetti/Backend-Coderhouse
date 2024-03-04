@@ -1,4 +1,7 @@
-<div>
+<div id="checkout" style="border-radius: .2rem;">
+    <!-- Checkout will insert the payment form here -->
+</div>
+<div id="cart">
   <h1>Carrito: {{cartId}}</h1>
   <div class="cart_container">
     {{#if products}}
@@ -15,6 +18,7 @@
             <p>Descripción:{{this.description}}</p>
             <strong>Cantidad: {{this.quantity}}</strong>
           </div>
+          <button id="delete_{{this._id}}" class="button_delete" style="flex-basis: 5%">X</button>
         </div>
       {{/each}}
     {{else}}
@@ -24,5 +28,8 @@
   <button id="btn_buy" {{#unless products}}disabled{{/unless}}>Comprar carrito 🛒</button>
 </div>
 
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="https://js.stripe.com/v3/"></script>
 <script src="/js/cart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

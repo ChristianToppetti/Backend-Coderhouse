@@ -41,6 +41,14 @@ class EmailService {
     }
 
     sendEmail(to, subject, html, attachments = []) {
+        const atIndex = to.indexOf('@')
+        const dotIndex = to.lastIndexOf('.')
+
+        if(atIndex === -1 || dotIndex === -1 || dotIndex < atIndex) {
+            // Validacion minima del correo
+            return false
+        }
+
         return this.transport.sendMail({
             from: config.mail.user, 
             to, 

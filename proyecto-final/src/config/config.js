@@ -26,7 +26,9 @@ export default {
         authType: process.env.AUTH_TYPE,
         jwtSecret: process.env.JWT_SECRET,
         sessionSecret: process.env.SESSION_SECRET,
-        githubSecret: process.env.GITHUB_SECRET
+        githubSecret: process.env.GITHUB_SECRET,
+        stripePublic: process.env.STRIPE_PUBLICKEY,
+        stripeSecret: process.env.STRIPE_SECRET
     },
     admin: {
         user: process.env.ADMIN_USER,

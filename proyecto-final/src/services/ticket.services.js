@@ -11,13 +11,14 @@ const updateStock = async (products) => {
 const updateCart = async (uid, products) => {
     const user = await UserService.getById(uid)
     const cartId = user.cart._id
-    await CartService.updateCart(cartId, products)
+
+    products.forEach(async (product) => {
+        await CartService.deleteProductFromCart(cartId, product.pid._id)
+    })
 }
 
 class TicketService {
     static async addTicket(ticket) {
-        const failedProducts = []
-        
         ticket.products = ticket.products.filter((product) => {
             if (product.stock >= product.quantity) {
                 return {
@@ -25,10 +26,6 @@ class TicketService {
                     quantity: product.quantity
                 }
             }
-            failedProducts.push({
-                product: product.pid, 
-                quantity: product.quantity
-            })
         })
 
         if (ticket.products.length == 0) {
@@ -41,17 +38,22 @@ class TicketService {
         }
 
         await TicketDao.add(ticket)
-        await updateStock(ticket.products)
-        await updateCart(ticket.purchaser, failedProducts)
         return await TicketDao.get({code: ticket.code})
     }
 
-    static async getByUser(user) {
-
-	}
-
     static async getByCode(code) {
         return await TicketDao.get({code})
+    }
+
+    static async updateStatus(code, status) {
+        const ticket = await TicketService.getByCode(code)
+        return await TicketDao.update(ticket._id, {status})
+    }
+
+    static async completeTicket(code) {
+        const ticket = await TicketService.getByCode(code)
+        await updateStock(ticket.products)
+        await updateCart(ticket.purchaser, ticket.products)
     }
 }
 

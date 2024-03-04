@@ -10,8 +10,8 @@ class TicketDao {
 		return result?.populate(['purchaser', 'products.pid'])
 	}
 
-    static async update(id, products) {
-		return await TicketModel.updateOne({_id: id}, {products})
+    static async update(id, options) {
+		return await TicketModel.updateOne({_id: id},  { ...options })
 	}
 	static async delete(id) {
 		await TicketModel.deleteOne({_id: id})

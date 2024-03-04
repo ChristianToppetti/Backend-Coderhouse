@@ -13,6 +13,11 @@ class TicketController {
         return await TicketService.getByCode(code)
     }
 
+    static async setAsComplete(code) {
+        await TicketService.updateStatus(code, 'completed')
+        await TicketService.completeTicket(code)
+        return await TicketService.getByCode(code)
+    }
 }
 
 export default TicketController
