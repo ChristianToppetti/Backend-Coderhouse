@@ -19,9 +19,9 @@ const JWTOpts = {
 }
 
 const githubOpts = {
-  clientID: 'Iv1.2beba5ccbb3912cb',
+  clientID: config.auth.githubClientID,
   clientSecret: config.auth.githubSecret,
-  callbackURL: 'http://localhost:8080/api/account/githubcallback',
+  callbackURL: config.url.githubCallback,
 }
 
 function coookieExtractor(req) {

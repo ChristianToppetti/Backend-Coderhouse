@@ -77,9 +77,7 @@ app.set('view engine', 'handlebars')
 
 initPassportConfig()
 app.use(passport.initialize())
-if (AUTH_TYPE === 'SESSION') {
-    app.use(passport.session())
-} 
+AUTH_TYPE === 'SESSION' && app.use(passport.session())
 
 app.use('/api/account', accountApiRouter)
 app.use('/api/products', productsApiRouter)

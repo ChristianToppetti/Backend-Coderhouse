@@ -6,15 +6,11 @@ const program = new Command()
 program.option('--mode <mode>', 'env mode', 'dev').parse()
 
 let envFile = null
-if (program.opts().mode === 'prod') {
-    envFile = "./.env.prod"
-}
-else {
+if (program.opts().mode === 'dev') {
     envFile = "./.env.dev"
+    dotenv.config({ path: envFile })
+    console.log(envFile, process.env.ENV)
 }
-
-dotenv.config({ path: envFile })
-console.log(envFile, process.env.ENV)
 
 export default {
     port: process.env.PORT || 8080,
@@ -27,8 +23,12 @@ export default {
         jwtSecret: process.env.JWT_SECRET,
         sessionSecret: process.env.SESSION_SECRET,
         githubSecret: process.env.GITHUB_SECRET,
+        githubClientID: process.env.GITHUB_CLIENTID,
         stripePublic: process.env.STRIPE_PUBLICKEY,
         stripeSecret: process.env.STRIPE_SECRET
+    },
+    url: {
+        githubCallback: process.env.GITHUB_CALLBACK
     },
     admin: {
         user: process.env.ADMIN_USER,

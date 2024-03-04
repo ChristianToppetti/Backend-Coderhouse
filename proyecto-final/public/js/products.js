@@ -1,6 +1,5 @@
 (function () {
     const addToCart = (cartId, productId) => {
-        console.log(cartId);
         fetch(`/api/carts/${cartId}/products/${productId}`, { method: "POST" })
                 .then(res => res.json())
                 .then(data => {

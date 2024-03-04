@@ -35,6 +35,7 @@ router.get('/:cid/payment-intents', async (req, res, next) => {
 			mode: 'payment',
 			ui_mode: 'embedded',
 			redirect_on_completion: 'never',
+			billing_address_collection: 'required',
 		}
 
 		const service = new PaymentsService()
